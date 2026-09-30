@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>flyvisu</title>
+<style>
+  :root { --ground: #f1f4f6; --surface: #ffffff; --ink: #15202b; --muted: #56636f; --rule: #d3dae0; --accent: #9a610f; color-scheme: light dark; }
+  @media (prefers-color-scheme: dark) { :root { --ground: #0e1318; --surface: #151c23; --ink: #e4e9ee; --muted: #93a0ab; --rule: #28323b; --accent: #e2a64b; } }
+  body { margin: 0; background: var(--ground); color: var(--ink); font: 17px/1.6 Georgia, "Times New Roman", serif; padding: 48px 20px; }
+  main { max-width: 720px; margin: 0 auto; display: grid; gap: 28px; }
+  h1 { font: 700 2.4rem/1.1 "Arial Narrow", Arial, sans-serif; margin: 0; }
+  p { margin: 0; color: var(--muted); }
+  ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; }
+  a { display: grid; gap: 4px; padding: 16px 18px; background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; color: var(--ink); text-decoration: none; }
+  a:hover, a:focus-visible { border-color: var(--accent); outline: none; }
+  a b { font: 600 1.1rem/1.3 "Arial Narrow", Arial, sans-serif; }
+  a span { color: var(--muted); font-size: 0.95rem; }
+</style>
+</head>
+<body>
+<main>
+  <h1>flyvisu</h1>
+  <p>Are connectome-constrained models of the fruit fly's visual system mechanistically identifiable? Illustrated pages from the study; the data, code and full log are in the repository.</p>
+  <ul>
+    <li><a href="fly-circuit-anatomy.html"><b>Fly Circuit Anatomy</b><span>The model in eleven animated plates, from the eye to training, and three built from our measurements.</span></a></li>
+    <li><a href="fly-circuit-map.html"><b>Fly Circuit Identifiability</b><span>Project map: how a run is built, what the study is designed to show, what makes a run cheaper.</span></a></li>
+    <li><a href="visu-anatomia.html"><b>Anatomia de um Circuito Visual</b><span>Portuguese version for the VISU website, one plate at a time.</span></a></li>
+  </ul>
+</main>
+</body>
+</html>

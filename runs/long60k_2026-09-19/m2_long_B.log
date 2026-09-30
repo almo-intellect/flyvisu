@@ -1,0 +1,22 @@
+[2026-09-20 04:37:18] utils:164 NumExpr defaulting to 12 threads.
+[m2] seam adapters: {'registered': True, 'flyvis_available': True, 'classes': ['SoftplusValue', 'CfCGate', 'InertFiller', 'DaleSynapseSign', 'ExactExponentialDynamics', 'CfCDynamics'], 'error': None}
+[2026-09-20 04:37:21] network_view:122 Initialized network view at /content/flyvis_data/results/flow/curve/long_B
+[2026-09-20 04:37:28] network:222 Initialized network with NumberOfParams(free=929, fixed=2959) parameters.
+[2026-09-20 04:37:28] chkpt_utils:36 Recovered network state.
+[2026-09-20 04:37:30] network:757 Computing 2 stimulus responses.
+
+Batch:   0%|          | 0/2 [00:00<?, ?it/s]Traceback (most recent call last):
+  File "/content/m2_released.py", line 360, in <module>
+    checkpoints(rest[0], rest[1])
+  File "/content/m2_released.py", line 245, in checkpoints
+    td = central_input_currents(net, dataset, rfs_raw)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/content/m2_released.py", line 159, in central_input_currents
+    cur = (weight[e] * act_fn(a[:, src_index[e]])).numpy()              # == current[..., e]
+           ~~~~~~^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/utils/_device.py", line 116, in __torch_function__
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: indices should be either on cpu or on the same device as the indexed tensor (cpu)
+
+                                            

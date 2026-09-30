@@ -1,0 +1,285 @@
+{
+  "env": {
+    "python": "3.11.13",
+    "platform": "Linux-6.6.122+-x86_64-with-glibc2.35",
+    "gpu": "Tesla T4",
+    "gpu_short": "T4",
+    "gpu_memory": "15360 MiB",
+    "cu_per_hour": 1.76
+  },
+  "work": "/content/drive/Shareddrives/Almo-2000-Research&Development/19 - FruitFly",
+  "flyvis": {
+    "version": "1.2.0",
+    "head": "92b3845cc426dd309a1a0e1b3890156c42e14021",
+    "n_nodes": 45669,
+    "n_edges": 1513231
+  },
+  "premise": {
+    "ok": true,
+    "n_models": 50,
+    "mean": 5.314309535159005,
+    "sd": 0.07520905350524594,
+    "cv_pct": 1.4152177814948386
+  },
+  "pretrained_root": "/content/flyvis_data/results",
+  "feasibility": {
+    "ok": true,
+    "problems": [],
+    "status": "done",
+    "device": "cuda",
+    "gpu": "T4",
+    "n_neurons": 45669,
+    "n_edges": 1513231,
+    "mixed_sign_types": [
+      "Am",
+      "C2",
+      "C3",
+      "R8"
+    ],
+    "baseline_params": 734,
+    "constrained_params": 929,
+    "pct_vs_baseline": 26.56675749318801,
+    "filler": 195,
+    "dale_edge_flips": 8590,
+    "seam_ok": true,
+    "seam_steps": [
+      {
+        "step": "adapters are the classes flyvis dispatches to",
+        "ok": true,
+        "detail": "SoftplusValue, CfCGate, InertFiller, DaleSynapseSign, ExactExponentialDynamics, CfCDynamics"
+      },
+      {
+        "step": "merged configs share the substrate",
+        "ok": true,
+        "detail": "A-B ['dale', 'liquid_tau'], A-D ['dale'], D-B ['liquid_tau']"
+      },
+      {
+        "step": "built classes are this module's adapters (identity)",
+        "ok": true,
+        "detail": "A=ExactExponentialDynamics, B=CfCDynamics, sign B=DaleSynapseSign"
+      },
+      {
+        "step": "clamp: syn_strength None, time_const [TAU_MIN, TAU_MAX]",
+        "ok": true,
+        "detail": "None, [0.002, 1000.0]"
+      },
+      {
+        "step": "free parameters matched across arms",
+        "ok": true,
+        "detail": "{'A': 929, 'dale_only': 929, 'B': 929} (stock 734; expected 929 each)"
+      },
+      {
+        "step": "gates are per cell type",
+        "ok": true,
+        "detail": "{'gate_v': 65, 'gate_u': 65, 'gate_b': 65}"
+      },
+      {
+        "step": "SoftplusValue semantic init == flyvis Value init",
+        "ok": true,
+        "detail": "max rel err 8.61e-07"
+      },
+      {
+        "step": "bias/tau/magnitude/count init identical across arms",
+        "ok": true,
+        "detail": ""
+      },
+      {
+        "step": "arm A signs == stock flyvis signs",
+        "ok": true,
+        "detail": ""
+      },
+      {
+        "step": "Dale flips groups, and exactly the planned ones",
+        "ok": true,
+        "detail": "10 groups differ A vs B; plan 10: R8->Mi1, R8->Mi4, R8->Mi9, R8->Mi15, Am->L1, Am->T1, C2->L1, C2->L2, C3->L1, C3->L2"
+      },
+      {
+        "step": "one sign per source type in the Dale arms",
+        "ok": true,
+        "detail": "mixed: []; before: ['Am', 'C2', 'C3', 'R8']"
+      },
+      {
+        "step": "one flyvis step == exact closed form e^(-dt/tau) v + (1-e^(-dt/tau)) u",
+        "ok": true,
+        "detail": "rel err 9.74e-08"
+      },
+      {
+        "step": "no parameters created lazily during forward (optimizer built first holds all)",
+        "ok": true,
+        "detail": ""
+      },
+      {
+        "step": "activity finite and bounded (steady state + luminance step)",
+        "ok": true,
+        "detail": "max|v| {'A': 1.5149729251861572, 'dale_only': 1.5149587392807007, 'B': 1.5149587392807007}"
+      },
+      {
+        "step": "Dale changes activity (A vs Dale-only)",
+        "ok": true,
+        "detail": "max|diff| 9.328e-02"
+      },
+      {
+        "step": "zero gates == no gates (Dale-only vs B at init)",
+        "ok": true,
+        "detail": "max|diff| 2.384e-07"
+      },
+      {
+        "step": "flyvis order backward/step/penalty-backward runs",
+        "ok": true,
+        "detail": ""
+      },
+      {
+        "step": "gate gradients non-zero and finite",
+        "ok": true,
+        "detail": "{'gate_v': 0.008973456919193268, 'gate_u': 0.011189923621714115, 'gate_b': 0.007603705395013094}"
+      },
+      {
+        "step": "bias/tau/magnitude gradients non-zero and finite",
+        "ok": true,
+        "detail": ""
+      },
+      {
+        "step": "filler is inert (grad None, unchanged after a step)",
+        "ok": true,
+        "detail": ""
+      },
+      {
+        "step": "gates move after one step",
+        "ok": true,
+        "detail": ""
+      },
+      {
+        "step": "state dict round trip (strict) reproduces arm B",
+        "ok": true,
+        "detail": "8 tensors, max|diff| 2.4e-07"
+      }
+    ],
+    "seam_numbers": {
+      "device": "cuda:0",
+      "extent": 15,
+      "n_types": 65,
+      "n_pairs": 604,
+      "stock_trainable": 734,
+      "trainable": {
+        "A": 929,
+        "dale_only": 929,
+        "B": 929
+      },
+      "softplus_init_max_rel_err": 8.614733815193176e-07,
+      "dale_plan": {
+        "scope": "all",
+        "n_groups": 604,
+        "n_flipped": 10,
+        "flipped": [
+          "R8->Mi1",
+          "R8->Mi4",
+          "R8->Mi9",
+          "R8->Mi15",
+          "Am->L1",
+          "Am->T1",
+          "C2->L1",
+          "C2->L2",
+          "C3->L1",
+          "C3->L2"
+        ],
+        "pct_weight_flipped": 2.633107557013579,
+        "mixed_types_before": [
+          "Am",
+          "C2",
+          "C3",
+          "R8"
+        ],
+        "mixed_types_after": [],
+        "explicit_signs": {
+          "Am": -1.0,
+          "C2": -1.0,
+          "C3": -1.0,
+          "R8": -1.0
+        }
+      },
+      "exact_update_rel_err": 9.742963413827965e-08,
+      "max_abs_activity": {
+        "A": 1.5149729251861572,
+        "dale_only": 1.5149587392807007,
+        "B": 1.5149587392807007
+      },
+      "max_diff_A_vs_dale_only": 0.093281090259552,
+      "max_diff_dale_only_vs_B": 2.384185791015625e-07,
+      "grad_norms": {
+        "A": {
+          "nodes_bias": 0.17044365406036377,
+          "nodes_time_const": 0.1528264880180359,
+          "nodes_filler_v": null,
+          "nodes_filler_u": null,
+          "nodes_filler_b": null,
+          "edges_syn_strength": 0.01478387787938118,
+          "_moved": [
+            "nodes_bias",
+            "nodes_time_const",
+            "edges_syn_strength"
+          ]
+        },
+        "B": {
+          "nodes_bias": 0.16950465738773346,
+          "nodes_time_const": 0.1520741730928421,
+          "nodes_gate_v": 0.008973456919193268,
+          "nodes_gate_u": 0.011189923621714115,
+          "nodes_gate_b": 0.007603705395013094,
+          "edges_syn_strength": 0.01469411700963974,
+          "_moved": [
+            "nodes_bias",
+            "nodes_time_const",
+            "nodes_gate_v",
+            "nodes_gate_u",
+            "nodes_gate_b",
+            "edges_syn_strength"
+          ]
+        }
+      },
+      "roundtrip_max_diff": 2.384185791015625e-07
+    }
+  },
+  "sintel": {
+    "enabled": true,
+    "ready": true
+  },
+  "timing": {
+    "per_arm": {
+      "A": {
+        "setup_s": 42.82859253883362,
+        "train_s": 7.765177965164185,
+        "n_done": 24,
+        "per_step_s": 0.323549081881841,
+        "ckpt_s": 2.0665013790130615,
+        "peak_gb": 1.5374560356140137,
+        "iters_per_epoch": 12,
+        "chkpt_every_epoch": 300,
+        "full_hours": 22.50944224121394,
+        "n_checkpoints_full": 71,
+        "cu_per_run": 39.61661834453653
+      },
+      "B": {
+        "setup_s": 8.42201542854309,
+        "train_s": 7.824183225631714,
+        "n_done": 24,
+        "per_step_s": 0.3260076344013214,
+        "ckpt_s": 2.0777242183685303,
+        "peak_gb": 1.772169589996338,
+        "iters_per_epoch": 12,
+        "chkpt_every_epoch": 300,
+        "full_hours": 22.68039639439848,
+        "n_checkpoints_full": 71,
+        "cu_per_run": 39.91749765414132
+      }
+    },
+    "cu_per_run": 39.91749765414132,
+    "full_hours": 22.68039639439848,
+    "timed_steps": 20,
+    "full_steps": 250000,
+    "gpu": "Tesla T4",
+    "gpu_short": "T4",
+    "cu_per_hour": 1.76,
+    "flyvis_head": "92b3845cc426dd309a1a0e1b3890156c42e14021",
+    "measured_at": "2026-09-16T23:52:28"
+  }
+}

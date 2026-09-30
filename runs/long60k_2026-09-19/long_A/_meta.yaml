@@ -1,0 +1,197 @@
+config:
+  type: NetworkDir
+  ensemble_and_network_id: curve/long_A
+  task_name: flow
+  train: true
+  resume: false
+  checkpoint_only: false
+  network_name: flow/curve/long_A
+  description: ???
+  overfit: false
+  delete_if_exists: true
+  save_environment: false
+  network:
+    connectome:
+      type: ConnectomeFromAvgFilters
+      file: fib25-fib19_v2.2.json
+      extent: 15
+      n_syn_fill: 1
+    dynamics:
+      type: ExactExponentialDynamics
+      activation:
+        type: relu
+    edge_config:
+      sign:
+        type: SynapseSign
+        form: value
+        requires_grad: false
+        initial_dist: Value
+        groupby:
+        - source_type
+        - target_type
+      syn_count:
+        type: SynapseCount
+        initial_dist: Lognormal
+        mode: mean
+        requires_grad: false
+        std: 1.0
+        groupby:
+        - source_type
+        - target_type
+        - dv
+        - du
+        penalize:
+          function: weight_decay
+          kwargs:
+            lambda: 0
+      syn_strength:
+        type: SynapseCountScaling
+        initial_dist: SoftplusValue
+        requires_grad: true
+        scale: 0.01
+        clamp:
+        groupby:
+        - source_type
+        - target_type
+        penalize:
+          function: weight_decay
+          kwargs:
+            lambda: 0
+    node_config:
+      bias:
+        type: RestingPotential
+        groupby:
+        - type
+        initial_dist: Normal
+        mode: sample
+        requires_grad: true
+        seed: 0
+        mean: 0.5
+        std: 0.05
+        symmetric: []
+        penalize:
+          activity: true
+      time_const:
+        type: TimeConstant
+        groupby:
+        - type
+        initial_dist: Value
+        value: 0.05
+        requires_grad: true
+        clamp:
+        - 0.002
+        - 1000.0
+      filler_v:
+        type: InertFiller
+        groupby:
+        - type
+        initial_dist: Value
+        value: 0.0
+        requires_grad: true
+        clamp:
+      filler_u:
+        type: InertFiller
+        groupby:
+        - type
+        initial_dist: Value
+        value: 0.0
+        requires_grad: true
+        clamp:
+      filler_b:
+        type: InertFiller
+        groupby:
+        - type
+        initial_dist: Value
+        value: 0.0
+        requires_grad: true
+        clamp:
+    stimulus_config:
+      type: Stimulus
+      init_buffer: false
+  task:
+    dataset:
+      type: MultiTaskSintel
+      tasks:
+      - flow
+      boxfilter:
+        extent: 15
+        kernel_size: 13
+      vertical_splits: 3
+      n_frames: 19
+      center_crop_fraction: 0.7
+      dt: 0.02
+      augment: true
+      random_temporal_crop: true
+      all_frames: false
+      resampling: true
+      interpolate: true
+      p_flip: 0.5
+      p_rot: 0.5
+      contrast_std: 0.2
+      brightness_std: 0.1
+      gaussian_white_noise: 0.08
+      gamma_std:
+      _init_cache: true
+      unittest: false
+      flip_axes:
+      - 0
+      - 1
+      - 2
+      - 3
+    decoder:
+      flow:
+        type: DecoderGAVP
+        shape:
+        - 8
+        - 2
+        kernel_size: 5
+        const_weight: 0.001
+        n_out_features:
+        p_dropout: 0.5
+    loss:
+      flow: l2norm
+    task_weights:
+    batch_size: 4
+    n_iters: 250000
+    n_folds: 4
+    fold: 1
+    seed: 0
+    original_split: true
+  optim:
+    type: Adam
+    optim_dec:
+      lr: 5e-05
+    optim_net:
+      lr: 5e-05
+  penalizer:
+    activity_penalty:
+      activity_baseline: 5.0
+      activity_penalty: 0.1
+      stop_iter: 150000
+      below_baseline_penalty_weight: 1.0
+      above_baseline_penalty_weight: 0.1
+    optim: SGD
+  scheduler:
+    lr_net:
+      function: stepwise
+      start: 5e-05
+      stop: 5e-06
+      steps: 10
+    lr_dec:
+      function: stepwise
+      start: 5e-05
+      stop: 5e-06
+      steps: 10
+    lr_pen:
+      function: stepwise
+      start: 5e-05
+      stop: 5e-06
+      steps: 10
+    dt:
+      function: stepwise
+      start: 0.02
+      stop: 0.02
+      steps: 10
+    chkpt_every_epoch: 84
+status: done
+modified: true

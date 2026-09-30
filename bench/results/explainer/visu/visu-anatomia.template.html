@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Anatomia de um Circuito Visual · VISU</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend+Mega:wght@700&family=Lexend+Giga:wght@400;500&family=Lexend:wght@400;500&display=swap">
+<style>
+  /* VISU · visu.almo.co.mz: azul-marinho, texto quase branco, Lexend Mega para títulos, Lexend Giga para texto, botões brancos quadrados */
+  :root {
+    --ground: #02133E;
+    --surface: #081B4D;
+    --surface-2: #0E2763;
+    --ink: #F9F9F9;
+    --muted: #B9C2DA;
+    --rule: rgba(249, 249, 249, 0.22);
+    --btn-bg: #F9F9F9;
+    --btn-ink: #1C1C1C;
+    --accent: #F2B44B;
+    --accent-soft: #323341;
+    --retina: #FF8E7A;
+    --lamina: #5FD3B5;
+    --medulla: #A6A9F5;
+    --lobula: #F2B44B;
+    --retina-soft: #352C4A;
+    --lamina-soft: #153956;
+    --medulla-soft: #233163;
+    --lobula-soft: #323341;
+    --hex-dark: #0B1F55;
+    --hex-light: #F4EFE4;
+    --arrow: #F9F9F9;
+    --display: "Lexend Mega", "Lexend Giga", "Arial Black", Arial, sans-serif;
+    --body: "Lexend Giga", "Lexend", Arial, sans-serif;
+    --label: "Lexend", "Lexend Giga", Arial, sans-serif;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body { background: var(--ground); color: var(--ink); font-family: var(--body); font-size: 15px; line-height: 1.55;
+    -webkit-font-smoothing: antialiased; }
+  .app { height: 100%; display: grid; grid-template-rows: auto auto minmax(0, 1fr) auto; gap: 10px; max-width: 1180px; margin: 0 auto;
+    padding: 14px 20px 10px; }
+  header { display: grid; gap: 4px; }
+  .mark { font-family: var(--body); font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+  h1, h2, h3 { font-family: var(--display); font-weight: 700; margin: 0; text-wrap: balance; }
+  h1 { font-size: clamp(1.25rem, 2.4vw, 1.75rem); line-height: 1.15; letter-spacing: 0.01em; }
+  h2 { font-size: clamp(1rem, 1.6vw, 1.25rem); line-height: 1.25; }
+  h3 { font-family: var(--body); font-weight: 500; font-size: 0.85rem; letter-spacing: 0.04em; }
+  p { margin: 0; }
+  .lede { color: var(--muted); font-size: 0.9rem; max-width: 78ch; }
+
+  nav.plates { display: flex; flex-wrap: wrap; gap: 6px; }
+  nav.plates button { font-family: var(--body); font-size: 0.68rem; letter-spacing: 0.04em; text-transform: uppercase; padding: 6px 10px;
+    border: 1px solid var(--rule); background: transparent; color: var(--ink); cursor: pointer; border-radius: 0; display: inline-flex; gap: 6px;
+    align-items: baseline; }
+  nav.plates button b { font-family: var(--display); font-weight: 700; font-size: 0.8rem; }
+  nav.plates button:hover { border-color: var(--ink); }
+  nav.plates button[aria-current="true"] { background: var(--btn-bg); color: var(--btn-ink); border-color: var(--btn-bg); }
+  nav.plates button:focus-visible, .nav-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  main.stage { min-height: 0; overflow: auto; background: var(--surface); border: 1px solid var(--rule); padding: 18px 22px 16px; }
+  .plate { display: none; gap: 12px; }
+  .plate.active { display: grid; animation: fadeIn 0.3s ease-out both; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } }
+  .plate-head { display: grid; grid-template-columns: auto 1fr; gap: 6px 16px; align-items: start; }
+  .step { font-family: var(--display); font-weight: 700; font-size: 1.7rem; line-height: 1; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .plate-head p { color: var(--muted); font-size: 0.86rem; max-width: 92ch; margin-top: 4px; }
+  .plate-head p strong, .why-text strong { color: var(--ink); font-weight: 500; }
+  .drawing svg { display: block; width: 100%; height: auto; max-width: 100%; }
+  .drawing.tall svg { max-height: 440px; margin: 0 auto; }
+  .facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 10px 22px; padding-top: 12px; border-top: 1px solid var(--rule); margin: 0; }
+  .facts div { display: grid; gap: 2px; }
+  .facts dt { font-family: var(--body); font-size: 0.64rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+  .facts dd { margin: 0; font-family: var(--label); font-size: 0.9rem; font-variant-numeric: tabular-nums; }
+  .facts dd small { font-family: var(--label); font-size: 0.8rem; color: var(--muted); }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 14px; list-style: none; padding: 0; margin: 0; font-family: var(--label); font-size: 0.75rem; color: var(--muted); }
+  .legend li { display: inline-flex; align-items: center; gap: 6px; }
+  .sw { width: 11px; height: 11px; display: inline-block; }
+
+  .why-grid { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(300px, 0.9fr); gap: 12px 28px; align-items: start; }
+  .why-text { display: grid; gap: 10px; max-width: 64ch; font-size: 0.88rem; color: var(--muted); }
+  .why-text em { color: var(--ink); }
+  .why-fig { margin: 0; display: grid; gap: 6px; }
+  .why-fig svg { width: 100%; height: auto; }
+  .why-fig figcaption { font-family: var(--label); font-size: 0.78rem; color: var(--muted); }
+
+  .arms { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 0 24px; }
+  .arm { display: grid; gap: 8px; }
+  .arm + .arm { border-left: 1px solid var(--rule); padding-left: 24px; }
+  .arm h3 { display: flex; align-items: center; gap: 8px; }
+  .tag { font-family: var(--label); font-size: 0.68rem; padding: 2px 8px; border: 1.5px solid; letter-spacing: 0.04em; }
+  .tag.a { border-color: var(--lamina); color: var(--lamina); }
+  .tag.b { border-color: var(--lobula); color: var(--lobula); }
+  .arm p { font-size: 0.86rem; color: var(--muted); }
+  .arm p strong { color: var(--ink); font-weight: 500; }
+  .eq { font-family: var(--label); font-size: 0.86rem; padding: 8px 12px; border: 1px solid var(--rule); background: var(--ground); overflow-x: auto; white-space: nowrap; }
+
+  .tally { display: grid; gap: 8px; }
+  .bar { display: flex; height: 32px; overflow: hidden; border: 1px solid var(--rule); }
+  .bar span { display: flex; align-items: center; justify-content: center; font-family: var(--label); font-size: 0.72rem; color: var(--ink);
+    white-space: nowrap; overflow: hidden; transform-origin: left center; animation: grow 0.9s cubic-bezier(.2,.7,.2,1) both; }
+  .bar-labels { font-family: var(--label); font-size: 0.76rem; color: var(--muted); }
+
+  .divider { font-family: var(--body); font-size: 0.66rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+
+  footer.controls { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; font-family: var(--label); font-size: 0.74rem; color: var(--muted); }
+  .nav-btn { font-family: var(--body); font-size: 0.78rem; padding: 8px 16px; border: 0; background: var(--btn-bg); color: var(--btn-ink); cursor: pointer; border-radius: 0; }
+  .nav-btn:disabled { opacity: 0.35; cursor: default; }
+  .counter { font-variant-numeric: tabular-nums; }
+  .credit { margin-left: auto; text-align: right; max-width: 60ch; }
+
+  svg text { font-family: var(--label); fill: var(--ink); font-variant-numeric: tabular-nums; }
+  svg .lbl { font-size: 11px; fill: var(--muted); }
+  svg .big { font-family: var(--display); font-weight: 700; font-size: 13px; }
+
+  @keyframes pop { from { opacity: 0; transform: scale(0.3); } }
+  @keyframes breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.6); } }
+  @keyframes swell { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.12); } }
+  @keyframes drawIn { from { stroke-dashoffset: var(--len); } 75%, to { stroke-dashoffset: 0; } }
+  @keyframes march { to { stroke-dashoffset: -40px; } }
+  @keyframes sweep { 0% { transform: translateY(0); opacity: 0; } 8% { opacity: 1; } 88% { opacity: 1; } 100% { transform: translateY(366px); opacity: 0; } }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+  @keyframes frameOn { 0%, 2% { fill: var(--lamina); } 10%, 100% { fill: var(--lamina-soft); } }
+  @keyframes lossOn { 0%, 34% { fill: var(--retina-soft); } 37%, 43% { fill: var(--retina); } 48%, 100% { fill: var(--retina-soft); } }
+  @keyframes gradBack { 0%, 46% { opacity: 0.2; stroke-dashoffset: 0; } 50% { opacity: 1; } 88% { opacity: 1; stroke-dashoffset: -108px; } 92%, 100% { opacity: 0.2; stroke-dashoffset: -108px; } }
+  @keyframes boxOn { 0%, 6% { fill: var(--accent-soft); stroke-width: 3; } 26%, 100% { fill: var(--medulla-soft); stroke-width: 1.4; } }
+  @keyframes grow { from { transform: scaleX(0); } }
+  @media (prefers-reduced-motion: reduce) { .anim, .bar span, .plate.active { animation: none !important; } }
+
+  @media (max-width: 760px) {
+    .app { padding: 10px 12px 8px; }
+    main.stage { padding: 14px; }
+    .why-grid { grid-template-columns: 1fr; }
+    .arm + .arm { border-left: 0; padding-left: 0; border-top: 1px solid var(--rule); padding-top: 12px; }
+    .credit { margin-left: 0; text-align: left; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="mark">VISU · Investigação · Setembro 2026</div>
+    <h1>Anatomia de um Circuito Visual</h1>
+    <p class="lede">Um modelo que segue a luz pelo olho da mosca-da-fruta, um passo de 20 milissegundos de cada vez. Oito desenhos da máquina, pela ordem em que o sinal viaja, e três do que medimos.</p>
+  </header>
+
+  <nav class="plates" aria-label="Pranchas"></nav>
+
+  <main class="stage" id="stage">
+
+  <section class="plate" data-title="Porquê" data-short="Porquê" aria-labelledby="why">
+    <div class="why-grid">
+      <div class="why-text">
+        <h2 id="why">Porque isto importa</h2>
+        <p>Modelos como este são a forma como a neurociência lê hoje um mecanismo a partir de um conectoma: liga-se a rede exactamente como a mosca está ligada, treina-se numa tarefa visual e depois olha-se lá para dentro e diz-se <em>é assim que a mosca calcula o movimento</em>. Um artigo de 2024 na <em>Nature</em> fez exactamente isso com o modelo desenhado nesta página e previu o circuito da selectividade à direcção nas células T4.</p>
+        <p>Em Abril de 2026, um estudo de reprodutibilidade voltou a treiná-lo cinquenta vezes, mudando apenas a semente aleatória. <strong>Todos os modelos atingiram o mesmo desempenho na tarefa</strong> (a perda de validação variou 1,4 %) <strong>e não concordaram no mecanismo.</strong> Parâmetros individuais variaram de 20 % a mais de 100 % entre sementes; 418 das 604 magnitudes sinápticas eram exactamente zero em algumas sementes e não em outras. O conectoma fixa a cablagem, mas não o que a cablagem faz. Um mecanismo lido de um só modelo treinado é uma amostra de uma família grande.</p>
+        <p><strong>A hipótese:</strong> o conectoma não é a única biologia que conhecemos. Os neurónios de um tipo são excitatórios ou inibitórios, não ambos (lei de Dale); os parâmetros são partilhados dentro de cada tipo celular; e a constante de tempo de um neurónio real depende do seu próprio estado. O braço B acrescenta estas três restrições ao braço A. Se bastarem para fazer sementes diferentes convergirem para <em>um</em> mecanismo, sem perda de desempenho, então as afirmações mecanicistas destes modelos tornam-se identificáveis, e são as restrições que ganham essa confiança.</p>
+      </div>
+      <figure class="why-fig">
+        <svg id="whyfig" viewBox="0 0 600 320" role="img" aria-label="Medido: os 50 modelos publicados dispersam-se no espaço dos mecanismos em torno do seu centro; os nossos dois braços, após 60 000 passos, ficam fora da nuvem. Um pequeno esquema mostra a hipótese: sementes restringidas a agruparem-se."></svg>
+        <figcaption>Medido, não esquemático. Cada ponto é um dos 50 modelos publicados, colocado pela sua impressão digital mecanicista, isto é, as correntes que entram numa célula T4c enquanto uma aresta atravessa o olho (2 de 24 dimensões), com a distância ao centro do conjunto. Os quadrados são os nossos dois braços após 60 000 passos de treino: ainda onde começaram, longe de todos os modelos treinados. O painel pequeno é o que se espera do braço B.</figcaption>
+      </figure>
+    </div>
+    <dl class="facts">
+      <div><dt>H1 · identificabilidade</dt><dd>as sementes do braço B dispersam menos que as do A <small>PERMDISP nas distâncias das impressões digitais, p &lt; 0,05</small></dd></div>
+      <div><dt>H2 · sem custo</dt><dd>erro na tarefa equivalente dentro de ±0,08 <small>dois testes unilaterais</small></dd></div>
+      <div><dt>Ambas passam</dt><dd>as restrições tornam os mecanismos identificáveis sem custo na tarefa</dd></div>
+      <div><dt>H1 falha</dt><dd>«a estrutura não basta» <small>um resultado negativo que generaliza o achado de 2026</small></dd></div>
+      <div><dt>Desenho</dt><dd>≥ 36 sementes por braço · pré-registado · ambos os braços com 929 parâmetros</dd></div>
+    </dl>
+  </section>
+
+  <section class="plate" data-title="O olho" data-short="Olho" aria-labelledby="p1">
+    <div class="plate-head">
+      <span class="step">1</span>
+      <div><h2 id="p1">O olho tem 721 píxeis hexagonais</h2>
+        <p>Cada fotograma do Sintel é projectado numa malha hexagonal com 15 colunas a partir do centro. Cada hexágono é um omatídio: uma coluna do sistema visual com a sua própria cópia do circuito. À esquerda, um clipe real de treino projectado na malha, 19 fotogramas a 20 ms, em câmara lenta; à direita, a aresta luminosa usada para tirar a impressão digital aos modelos treinados.</p></div>
+    </div>
+    <div class="drawing tall"><svg id="eye" viewBox="0 0 900 470" role="img" aria-label="Duas malhas de 721 hexágonos: um clipe do Sintel a passar à esquerda, uma aresta luminosa em movimento à direita"></svg></div>
+    <dl class="facts">
+      <div><dt>Colunas</dt><dd>721 <small>= 1 + 3·15·16</small></dd></div>
+      <div><dt>Fotogramas por clipe de treino</dt><dd>19 <small>a 20 ms</small></dd></div>
+      <div><dt>Entrada por coluna</dt><dd>1 luminância <small>→ 8 fotorreceptores</small></dd></div>
+    </dl>
+  </section>
+
+  <section class="plate" data-title="Uma coluna" data-short="Coluna" aria-labelledby="p2">
+    <div class="plate-head">
+      <span class="step">2</span>
+      <div><h2 id="p2">Cada coluna tem os mesmos 65 tipos celulares</h2>
+        <p>A luz entra por cima, por oito fotorreceptores, e desce por quatro neurópilos. Os tipos são os mesmos em todas as colunas, por isso a rede inteira é um circuito repetido 721 vezes: 45 669 neurónios, com alguns tipos a faltar em certas colunas.</p></div>
+    </div>
+    <ul class="legend">
+      <li><span class="sw" style="background:var(--retina)"></span>retina</li>
+      <li><span class="sw" style="background:var(--lamina)"></span>lâmina</li>
+      <li><span class="sw" style="background:var(--medulla)"></span>medula</li>
+      <li><span class="sw" style="background:var(--lobula)"></span>lóbula e placa lobular</li>
+    </ul>
+    <div class="drawing tall"><svg id="column" viewBox="0 0 900 470" role="img" aria-label="Uma coluna de 65 tipos celulares empilhados por neurópilo, repetida em todas as colunas"></svg></div>
+    <dl class="facts">
+      <div><dt>Tipos celulares</dt><dd>65</dd></div>
+      <div><dt>Neurónios</dt><dd>45 669</dd></div>
+      <div><dt>Tipos de leitura</dt><dd>34 <small>células T, Tm e TmY</small></dd></div>
+    </dl>
+  </section>
+
+  <section class="plate" data-title="Sinapses" data-short="Sinapses" aria-labelledby="p3">
+    <div class="plate-head">
+      <span class="step">3</span>
+      <div><h2 id="p3">1,5 milhões de sinapses, 604 botões</h2>
+        <p>O conectoma diz que células se tocam, quantas sinapses partilham e com que sinal. O treino não aprende cada sinapse. Aprende uma força por <em>par de tipos</em>, o mesmo número para todas as sinapses Mi1→T4c em todas as colunas, e as contagens de sinapses do conectoma escalam-na.</p></div>
+    </div>
+    <div class="drawing tall"><svg id="synapse" viewBox="0 0 900 490" role="img" aria-label="Três células Mi1 de colunas vizinhas convergem numa célula T4c; o peso é sinal vezes contagem vezes uma magnitude partilhada; em baixo, nove colunas cujas ligações Mi1 para T4c mudam todas juntas quando um botão roda"></svg></div>
+    <dl class="facts">
+      <div><dt>Sinapses</dt><dd>1 513 231 <small>cablagem fixa</small></dd></div>
+      <div><dt>Grupos de contagem (par de tipos × deslocamento)</dt><dd>2 355 <small>fixos</small></dd></div>
+      <div><dt>Magnitudes aprendidas (par de tipos)</dt><dd>604</dd></div>
+      <div><dt>Sinais (par de tipos)</dt><dd>604 <small>fixos</small></dd></div>
+    </dl>
+  </section>
+
+  <section class="plate" data-title="Um neurónio" data-short="Neurónio" aria-labelledby="p4">
+    <div class="plate-head">
+      <span class="step">4</span>
+      <div><h2 id="p4">Um neurónio é uma voltagem com fugas</h2>
+        <p>Cada neurónio tem um único número, a sua voltagem. A cada 20 ms é puxado para um alvo (a sua polarização de repouso mais as voltagens rectificadas e ponderadas de tudo o que faz sinapse com ele, mais a luz se for um fotorreceptor) e percorre parte do caminho, definida pela sua constante de tempo τ. O que envia adiante é a sua voltagem rectificada.</p></div>
+    </div>
+    <div class="drawing tall"><svg id="neuron" viewBox="0 0 900 330" role="img" aria-label="Esquema de um neurónio: entradas sinápticas, polarização e luz somam-se num impulso; um integrador com fugas de constante de tempo tau produz a voltagem; saída ReLU"></svg></div>
+    <dl class="facts">
+      <div><dt>Actualização, exacta</dt><dd>v ← e<sup>−dt/τ</sup>·v + (1−e<sup>−dt/τ</sup>)·u</dd></div>
+      <div><dt>Por tipo</dt><dd>polarização b<sub>t</sub>, τ<sub>t</sub> <small>65 cada</small></dd></div>
+      <div><dt>Saída</dt><dd>relu(v)</dd></div>
+    </dl>
+  </section>
+
+  <section class="plate" data-title="Os dois braços" data-short="Dois braços" aria-labelledby="p5">
+    <div class="plate-head">
+      <span class="step">5</span>
+      <div><h2 id="p5">Os dois braços diferem exactamente em dois pontos</h2>
+        <p>Mesma cablagem, mesmo neurónio, mesmos 929 números treináveis, mesmo ponto de partida. O braço B acrescenta duas restrições biológicas; o braço A leva substitutos inertes para que a contagem de parâmetros seja igual.</p></div>
+    </div>
+    <div class="arms">
+      <div class="arm">
+        <h3><span class="tag a">Braço A</span> base</h3>
+        <svg id="armA" viewBox="0 0 420 240" role="img" aria-label="Braço A: um tipo de origem mantém os sinais mistos do conectoma; a constante de tempo é uma linha plana"></svg>
+        <p><strong>Sinais tal como o conectoma os reporta.</strong> Quatro tipos de origem (R8, Am, C2, C3) excitam alguns alvos e inibem outros.</p>
+        <p><strong>τ é uma constante aprendida</strong> por tipo celular, igual para todas as entradas.</p>
+        <div class="eq">τ = τ<sub>t</sub></div>
+      </div>
+      <div class="arm">
+        <h3><span class="tag b">Braço B</span> restringido</h3>
+        <svg id="armB" viewBox="0 0 420 240" role="img" aria-label="Braço B: a lei de Dale dá um só sinal ao tipo de origem; a constante de tempo é modulada dentro de uma banda"></svg>
+        <p><strong>Lei de Dale:</strong> um sinal por tipo de origem, a partir do neurotransmissor publicado. Inverte 10 dos 604 pares, 8 590 sinapses.</p>
+        <p><strong>τ escuta o neurónio:</strong> três portas por tipo deixam a sua própria voltagem e o seu impulso esticar ou encurtar τ, limitado entre τ/e e τ·e.</p>
+        <div class="eq">τ = τ<sub>t</sub> · exp(tanh(g<sub>v</sub>·v + g<sub>u</sub>·u + g<sub>b</sub>))</div>
+      </div>
+    </div>
+    <div class="drawing"><svg id="daleflip" viewBox="0 0 900 120" role="img" aria-label="Os dez pares de tipos que a lei de Dale volta a assinar, a inverterem um a um do sinal do conectoma para o do neurotransmissor, com uma contagem corrente das ligações afectadas"></svg></div>
+  </section>
+
+  <section class="plate" data-title="Leitura do movimento" data-short="Leitura" aria-labelledby="p6">
+    <div class="plate-head">
+      <span class="step">6</span>
+      <div><h2 id="p6">Ler o movimento a partir do circuito</h2>
+        <p>As voltagens de 34 tipos de saída, os detectores de movimento T4/T5 e as células Tm e TmY que os alimentam, são empilhadas como 34 canais sobre a grelha hexagonal e passam por um pequeno descodificador convolucional hexagonal que prevê o fluxo óptico: uma seta de movimento por coluna. A perda é a distância entre essas setas e a verdade do Sintel.</p></div>
+    </div>
+    <div class="drawing tall"><svg id="readout" viewBox="0 0 900 380" role="img" aria-label="34 canais sobre a grelha hexagonal, um descodificador hexagonal de duas camadas e as setas de fluxo óptico previstas"></svg></div>
+    <dl class="facts">
+      <div><dt>Descodificador</dt><dd>conv. hex. 34→8 · softplus · dropout · conv. hex. 8→2</dd></div>
+      <div><dt>Saída</dt><dd>2 canais de fluxo × 721</dd></div>
+      <div><dt>Perda</dt><dd>L2 ao fluxo do Sintel</dd></div>
+    </dl>
+  </section>
+
+  <section class="plate" data-title="Um passo de treino" data-short="Treino" aria-labelledby="p7">
+    <div class="plate-head">
+      <span class="step">7</span>
+      <div><h2 id="p7">Um passo de treino, e o que pode mudar</h2>
+        <p>Quatro clipes de 19 fotogramas atravessam a rede; o gradiente volta para trás pelos 19 passos até aos 929 números treináveis. Tudo o resto (cablagem, contagens de sinapses, sinais) fica fixo pelo conectoma.</p></div>
+    </div>
+    <div class="drawing"><svg id="training" viewBox="0 0 900 200" role="img" aria-label="Linha temporal de 19 fotogramas a 20 ms com a perda no fim e o gradiente a voltar para trás"></svg></div>
+    <div class="tally">
+      <h3>Treináveis · 929 por braço</h3>
+      <div class="bar" aria-label="929 parâmetros treináveis: 604 magnitudes, 65 constantes de tempo, 65 polarizações e 195 portas ou enchimento">
+        <span style="flex:604;background:var(--medulla-soft);animation-delay:0s">604 magnitudes</span>
+        <span style="flex:65;background:var(--lamina-soft);animation-delay:.15s">65 τ</span>
+        <span style="flex:65;background:var(--retina-soft);animation-delay:.3s">65 b</span>
+        <span style="flex:195;background:var(--lobula-soft);animation-delay:.45s">195 portas (B) / enchimento (A)</span>
+      </div>
+      <h3>Fixos · 2 959</h3>
+      <div class="bar" aria-label="2959 parâmetros fixos: 2355 contagens de sinapses e 604 sinais">
+        <span style="flex:2355;background:var(--ground);animation-delay:.6s">2 355 contagens de sinapses</span>
+        <span style="flex:604;background:var(--accent-soft);animation-delay:.75s">604 sinais</span>
+      </div>
+      <div class="bar-labels"><span>mais a própria cablagem: 1 513 231 ligações, nunca alteradas</span></div>
+    </div>
+  </section>
+
+  <section class="plate" data-title="A rede a disparar" data-short="A disparar" aria-labelledby="p8">
+    <div class="plate-head">
+      <span class="step">8</span>
+      <div><h2 id="p8">A rede a disparar</h2>
+        <p>Tudo junto, é isto que corre quando uma aresta atravessa o olho. Os fotorreceptores reportam luminância; as células da lâmina respondem só à mudança; duas vias da medula levam-na adiante, uma rápida e outra cerca de 250 ms mais lenta; uma célula T4c multiplica o sinal rápido da sua própria coluna pelo sinal atrasado da coluna de baixo. Quando a aresta sobe, os dois chegam juntos e a T4c dispara. Quando desce, desencontram-se e a T4c fica em silêncio. Quais tipos da medula fornecem o braço rápido e o lento é exactamente o que a impressão digital lê num modelo treinado, e aquilo em que os 50 modelos publicados discordam.</p></div>
+    </div>
+    <div class="drawing tall"><svg id="firing" viewBox="0 0 900 360" role="img" aria-label="Cinco malhas hexagonais, uma por etapa da retina à T4c, a mostrar a actividade enquanto uma aresta luminosa sobe e depois desce; a T4c só acende no varrimento para cima"></svg></div>
+    <dl class="facts">
+      <div><dt>Estímulo</dt><dd>aresta luminosa, a subir e depois a descer <small>a direcção preferida da T4c é para cima (90°)</small></dd></div>
+      <div><dt>Detector desenhado</dt><dd>rápido × atrasado <small>meio-detector de Hassenstein–Reichardt, esquemático</small></dd></div>
+      <div><dt>Nos modelos treinados</dt><dd>varia com a semente <small>entrada Mi9 na T4c ausente em 19 dos 50 modelos publicados, Mi4 em 11</small></dd></div>
+    </dl>
+  </section>
+
+  <section class="plate" data-title="Entradas da T4c, modelo a modelo" data-short="Entradas" data-measured="true" aria-labelledby="p9">
+    <div class="plate-head">
+      <span class="step">9</span>
+      <div><div class="divider">O que medimos · Setembro 2026</div><h2 id="p9">Mesma tarefa, circuito diferente: as entradas da T4c, modelo a modelo</h2>
+        <p>A impressão digital, medida nos 50 modelos publicados pelos autores. Cada barra é a fracção da corrente total que entra na T4c central fornecida por um tipo pré-sináptico enquanto uma aresta se move na direcção preferida: excitação para cima, inibição para baixo. Os traços finos são a dispersão do conjunto. A excitação por Mi1 é a única quase-constante; que inibição a equilibra, e se Mi9, Mi4 ou Tm3 participam de todo, muda de semente para semente. Todos estes modelos ficam a menos de 1,4 % uns dos outros na tarefa.</p></div>
+    </div>
+    <div class="drawing tall"><svg id="mixes" viewBox="0 0 900 360" role="img" aria-label="Doze barras com sinal, uma por tipo pré-sináptico da T4c, a transformarem-se entre a média do conjunto e seis modelos publicados individuais"></svg></div>
+    <dl class="facts">
+      <div><dt>Modelos</dt><dd>50 publicados <small>perda na tarefa a menos de 1,4 %</small></dd></div>
+      <div><dt>Dispersão do mecanismo</dt><dd>CV 0,59 <small>41× a dispersão da perda na tarefa</small></dd></div>
+      <div><dt>Entradas totalmente ausentes</dt><dd>Mi9 em 19 · Mi4 em 11 · Tm3 em 17 <small>de 50 modelos</small></dd></div>
+    </dl>
+  </section>
+
+  <section class="plate" data-title="Sintonia direccional" data-short="Sintonia" data-measured="true" aria-labelledby="p10">
+    <div class="plate-head">
+      <span class="step">10</span>
+      <div><div class="divider">O que medimos · Setembro 2026</div><h2 id="p10">Sintonia direccional de uma T4c treinada</h2>
+        <p>Modelo publicado 000, simulado por nós: uma aresta luminosa atravessa o olho em cada uma de doze direcções enquanto se regista a voltagem da T4c central. O traço é a resposta para a direcção mostrada; o gráfico polar recolhe o pico de cada uma. Esta T4c prefere movimento a 60°, perto do «para cima» dos manuais, e fica quase em silêncio na direcção oposta. Os outros três subtipos de T4 do mesmo modelo estão desenhados a ténue; nesta semente a T4d quase não responde a uma aresta ON.</p></div>
+    </div>
+    <div class="drawing tall"><svg id="tuning" viewBox="0 0 900 380" role="img" aria-label="Um pequeno olho hexagonal com uma aresta a varrer na direcção actual, o traço da voltagem da T4c a desenhar-se ao longo do tempo e um gráfico polar da resposta de pico por direcção a preencher-se"></svg></div>
+    <dl class="facts">
+      <div><dt>Direcção preferida</dt><dd>60° <small>pico 1,18 · nula 240°: 0,02</small></dd></div>
+      <div><dt>Índice de selectividade direccional</dt><dd>0,96</dd></div>
+      <div><dt>T4d, mesmo modelo</dt><dd>pico 0,08 <small>quase não responde nesta semente</small></dd></div>
+      <div><dt>Calculado</dt><dd>28 s na GPU do portátil <small>flyvis MovingEdge, velocidade 19, 12 ângulos</small></dd></div>
+    </dl>
+  </section>
+
+  <section class="plate" data-title="Sessenta mil passos" data-short="Repetição" data-measured="true" aria-labelledby="p11">
+    <div class="plate-head">
+      <span class="step">11</span>
+      <div><div class="divider">O que medimos · Setembro 2026</div><h2 id="p11">Sessenta mil passos de treino, repetidos</h2>
+        <p>O braço A treinado durante um quarto do calendário do flyvis, com um ponto de controlo a cada mil passos. A perda assenta nos primeiros três mil e depois fica num patamar; a impressão digital, medida em cada ponto de controlo, quase não se move. As barras à direita são as entradas da T4c no ponto de controlo actual, com a média do conjunto treinado contornada por trás. Nada do circuito treinado se formou ainda: a corrida não pode ser interrompida cedo e ainda ter um mecanismo para comparar.</p></div>
+    </div>
+    <div class="drawing tall"><svg id="playback" viewBox="0 0 900 360" role="img" aria-label="Perda de validação ao longo de 60 000 passos a desenhar-se progressivamente, ao lado das barras de entrada da T4c no ponto de controlo actual comparadas com a média do conjunto treinado"></svg></div>
+    <dl class="facts">
+      <div><dt>Corrida</dt><dd>60 492 passos · 5 h · 7,7 CU <small>braços A e B numa L4</small></dd></div>
+      <div><dt>Perda</dt><dd>1212,6 → 1207,8 <small>modelos treinados: 1103–1147</small></dd></div>
+      <div><dt>Impressão digital</dt><dd>moveu-se 0,034 <small>a 0,39 dos modelos treinados, e não na sua direcção</small></dd></div>
+    </dl>
+  </section>
+
+  </main>
+
+  <footer class="controls">
+    <button class="nav-btn" id="prev" type="button">← Anterior</button>
+    <button class="nav-btn" id="next" type="button">Seguinte →</button>
+    <span class="counter" id="counter"></span>
+    <span class="credit">Números do conectoma fib25/fib19 tal como carregado pelo flyvis 1.2.0 (extensão 15) e da nossa construção verificada, Set. 2026. O detector da prancha 8 é o esquema dos manuais, não a actividade de um modelo treinado. © VISU, por Almo Intellect.</span>
+  </footer>
+</div>
+
+<script>const DATA = /*__DATA__*/{};</script>
+<script>
+(function () {
+  const NS = "http://www.w3.org/2000/svg";
+  const el = (tag, attrs, parent) => {
+    const n = document.createElementNS(NS, tag);
+    for (const k in attrs) n.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(n);
+    return n;
+  };
+  const txt = (parent, x, y, s, attrs) => {
+    const t = el("text", Object.assign({ x, y }, attrs || {}), parent);
+    t.textContent = s;
+    return t;
+  };
+  const css = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  // números em português: vírgula decimal, espaço fino nos milhares
+  const fmt = (x, d) => Number(x).toLocaleString("pt-PT", { minimumFractionDigits: d, maximumFractionDigits: d });
+  const animate = (node, spec, extra) => {
+    node.classList.add("anim");
+    node.style.animation = spec;
+    if (extra) for (const k in extra) { if (k.startsWith("--")) node.style.setProperty(k, extra[k]); else node.style[k] = extra[k]; }
+    return node;
+  };
+  const travel = (parent, pathId, dur, attrs, opts) => {
+    if (reduced) return null;
+    const dot = el("circle", Object.assign({ r: 5 }, attrs), parent);
+    const am = el("animateMotion", Object.assign({ dur, repeatCount: "indefinite", begin: "0s" }, opts || {}), dot);
+    el("mpath", { href: "#" + pathId }, am);
+    return dot;
+  };
+  // um só relógio por desenho; a função só é chamada enquanto a prancha está visível
+  const loop = (node, fn) => {
+    if (reduced) return;
+    const plate = node.closest(".plate");
+    let start = null;
+    (function frame(ts) {
+      if (start === null) start = ts;
+      if (plate.classList.contains("active")) fn((ts - start) / 1000);
+      requestAnimationFrame(frame);
+    })(performance.now());
+  };
+
+  function hexCells(E) {
+    const cells = [];
+    for (let u = -E; u <= E; u++) for (let v = -E; v <= E; v++) {
+      if (Math.max(Math.abs(u), Math.abs(v), Math.abs(u + v)) <= E) cells.push([u, v]);
+    }
+    return cells;
+  }
+  function hexPath(cx, cy, r) {
+    const p = [];
+    for (let i = 0; i < 6; i++) {
+      const a = Math.PI / 180 * (60 * i - 30);
+      p.push((cx + r * Math.cos(a)).toFixed(2) + "," + (cy + r * Math.sin(a)).toFixed(2));
+    }
+    return p.join(" ");
+  }
+  function lattice(svg, E, cx, cy, r, gap) {
+    const s = r + (gap || 0);
+    return hexCells(E).map(([u, v]) => {
+      const x = cx + Math.sqrt(3) * s * (u + v / 2), y = cy + 1.5 * s * v;
+      return { u, v, x, y, poly: el("polygon", { points: hexPath(x, y, r) }, svg) };
+    });
+  }
+  function mix(a, b, t) {
+    const pa = a.match(/\w\w/g).map(h => parseInt(h, 16)), pb = b.match(/\w\w/g).map(h => parseInt(h, 16));
+    return "rgb(" + pa.map((c, i) => Math.round(c + (pb[i] - c) * t)).join(",") + ")";
+  }
+  const hx = name => css(name).replace("#", "");
+
+  // ---- 0. porquê: a nuvem medida dos modelos publicados, e a hipótese ---------------------------
+  (function why() {
+    const svg = document.getElementById("whyfig");
+    const fp = DATA.fp;
+    const popIn = (node, delay) => animate(node, `pop 0.45s cubic-bezier(.2,.8,.3,1.3) both ${delay}s`, { transformBox: "fill-box", transformOrigin: "center" });
+    const drawLine = (x1, y1, x2, y2, color, delay) => {
+      const L = Math.hypot(x2 - x1, y2 - y1);
+      return animate(el("line", { x1, y1, x2, y2, stroke: css(color), "stroke-width": 1, opacity: 0.35 }, svg),
+        `drawIn 0.9s ease-out both ${delay}s`, { strokeDasharray: L + "px", "--len": L + "px" });
+    };
+    const X0 = 14, Y0 = 30, PW = 380, PH = 232;
+    el("rect", { x: X0, y: Y0, width: PW, height: PH, fill: css("--ground"), stroke: css("--rule") }, svg);
+    txt(svg, X0 + 10, 20, "MEDIDO · 50 MODELOS", { class: "big", "font-size": 11, fill: css("--lamina") });
+    txt(svg, X0 + PW - 8, 20, "2 de 24 dimensões", { class: "lbl", "text-anchor": "end", "font-size": 9.5 });
+    if (fp) {
+      const P = fp.released.pca, ours = { A: fp.runs.A.pca, B: fp.runs.B.pca };
+      const xs = P.concat(ours.A, ours.B).map(p => p[0]), ys = P.concat(ours.A, ours.B).map(p => p[1]);
+      const xmin = Math.min(...xs), xmax = Math.max(...xs), ymin = Math.min(...ys), ymax = Math.max(...ys);
+      const sc = Math.min((PW - 70) / (xmax - xmin), (PH - 56) / (ymax - ymin));
+      const ox = X0 + 24 + (PW - 70 - sc * (xmax - xmin)) / 2, oy = Y0 + 28 + (PH - 56 - sc * (ymax - ymin)) / 2;
+      const S = p => [ox + sc * (p[0] - xmin), oy + sc * (ymax - p[1])];
+      const c = S([P.reduce((s, p) => s + p[0], 0) / P.length, P.reduce((s, p) => s + p[1], 0) / P.length]);
+      P.forEach((p, i) => { const q = S(p); drawLine(c[0], c[1], q[0], q[1], "--lamina", 0.3 + i * 0.05); });
+      P.forEach((p, i) => { const q = S(p); popIn(el("circle", { cx: q[0], cy: q[1], r: 4.2, fill: css("--lamina-soft"), stroke: css("--lamina"), "stroke-width": 1.3 }, svg), 0.25 + i * 0.05); });
+      animate(el("circle", { cx: c[0], cy: c[1], r: 3.5, fill: css("--lamina") }, svg), "breathe 2.8s ease-in-out infinite 3.4s", { transformBox: "fill-box", transformOrigin: "center" });
+      txt(svg, c[0] + 8, c[1] - 8, "centro", { class: "lbl", "font-size": 9 });
+      const t0 = 0.25 + P.length * 0.05 + 0.5;
+      [["A", "--retina"], ["B", "--lobula"]].forEach(([k, col], j) => {
+        const pts = ours[k].map(S);
+        const path = el("path", { d: "M " + pts.map(q => q[0].toFixed(1) + " " + q[1].toFixed(1)).join(" L "), stroke: css(col), "stroke-width": 1.6, fill: "none" }, svg);
+        const L = Math.max(path.getTotalLength(), 1);
+        animate(path, `drawIn 1.4s ease-out both ${t0 + j * 0.3}s`, { strokeDasharray: L + "px", "--len": L + "px" });
+        const q = pts[pts.length - 1];
+        popIn(el("rect", { x: q[0] - 5, y: q[1] - 5, width: 10, height: 10, fill: css(col), stroke: css("--ink"), "stroke-width": 1 }, svg), t0 + 1.3 + j * 0.3);
+        txt(svg, q[0] - 10, q[1] + (j ? 22 : -12), "braço " + k + " · 60 mil passos", { class: "lbl", "font-size": 9, "text-anchor": "end", fill: css(col) });
+      });
+      txt(svg, X0 + PW / 2, Y0 + PH + 15, `pontos: 50 modelos treinados · linhas: distância ao centro (média ${fmt(fp.released.mean_dist, 2)})`, { class: "lbl", "text-anchor": "middle", "font-size": 8.5 });
+      txt(svg, X0 + PW / 2, Y0 + PH + 28, "quadrados: os nossos braços após 60 mil passos · a 0,39 do centro, moveram-se 0,03", { class: "lbl", "text-anchor": "middle", "font-size": 8.5 });
+    } else {
+      txt(svg, X0 + PW / 2, Y0 + PH / 2, "dados das impressões digitais em falta", { class: "lbl", "text-anchor": "middle" });
+    }
+    const H0 = 410, HW = 176;
+    el("rect", { x: H0, y: Y0, width: HW, height: PH, fill: css("--ground"), stroke: css("--rule") }, svg);
+    txt(svg, H0 + 10, 20, "HIPÓTESE · BRAÇO B", { class: "big", "font-size": 12, fill: css("--lobula") });
+    let seed = 7;
+    const rnd = () => { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; };
+    const gauss = () => { let s = 0; for (let i = 0; i < 6; i++) s += rnd(); return (s - 3) / 1.2; };
+    const hc = [H0 + HW / 2, Y0 + PH / 2 - 6], hp = [];
+    for (let i = 0; i < 16; i++) hp.push([hc[0] + gauss() * 13, hc[1] + gauss() * 11]);
+    const hm = [hp.reduce((s, p) => s + p[0], 0) / 16, hp.reduce((s, p) => s + p[1], 0) / 16];
+    hp.forEach((p, i) => drawLine(hm[0], hm[1], p[0], p[1], "--lobula", 0.4 + i * 0.08));
+    hp.forEach((p, i) => popIn(el("circle", { cx: p[0], cy: p[1], r: 4.2, fill: css("--lobula-soft"), stroke: css("--lobula"), "stroke-width": 1.3 }, svg), 0.35 + i * 0.08));
+    animate(el("circle", { cx: hm[0], cy: hm[1], r: 3.5, fill: css("--lobula") }, svg), "breathe 2.8s ease-in-out infinite 2s", { transformBox: "fill-box", transformOrigin: "center" });
+    txt(svg, H0 + HW / 2, Y0 + PH - 30, "sementes concordam", { class: "lbl", "text-anchor": "middle", "font-size": 9.5 });
+    txt(svg, H0 + HW / 2, Y0 + PH - 16, "esquema, mesma escala", { class: "lbl", "text-anchor": "middle", "font-size": 8.5 });
+    txt(svg, H0 + HW / 2, Y0 + PH + 15, "H1: as distâncias do braço B", { class: "lbl", "text-anchor": "middle", "font-size": 8.5 });
+    txt(svg, H0 + HW / 2, Y0 + PH + 28, "menores que as do braço A", { class: "lbl", "text-anchor": "middle", "font-size": 8.5 });
+    txt(svg, 300, 316, "os 50 modelos treinados: perda na tarefa a menos de 1,4 % · mecanismos 41× mais dispersos", { class: "lbl", "text-anchor": "middle", "font-size": 9.5 });
+  })();
+
+  // ---- 1. o olho: um clipe real do Sintel e a aresta da impressão digital ------------------------
+  (function eye() {
+    const svg = document.getElementById("eye");
+    const dark = hx("--hex-dark"), light = hx("--hex-light");
+    const sin = DATA.sintel;
+    const R0 = sin ? 6.3 : 8.6, G0 = sin ? 0.6 : 0.9, S0 = R0 + G0;
+    const EX = sin ? 668 : 450, EY = 222;
+    const cells = lattice(svg, 15, EX, EY, R0, G0);
+    const th = Math.PI / 180 * 25, dir = [Math.cos(th), Math.sin(th)];
+    const proj = cells.map(c => (c.x - EX) * dir[0] + (c.y - EY) * dir[1]);
+    const lo = Math.min(...proj), hi = Math.max(...proj), blur = 3 * S0;
+    function paintEdge(t) {
+      const edge = lo - 60 + ((t % 1) * (hi - lo + 120));
+      cells.forEach((c, i) => c.poly.setAttribute("fill", mix(dark, light, 1 - 1 / (1 + Math.exp(-(proj[i] - edge) / blur)))));
+    }
+    const capY = EY + 16 * 1.5 * S0 + 12;
+    txt(svg, EX, capY, sin ? "estímulo da impressão digital · uma aresta luminosa a mover-se a 25°" : "extensão 15 · 721 colunas · uma aresta luminosa a 25°", { "text-anchor": "middle", class: "lbl", "font-size": 10 });
+    const centre = cells.find(c => c.u === 0 && c.v === 0);
+    centre.poly.setAttribute("stroke", css("--lobula"));
+    centre.poly.setAttribute("stroke-width", "2.2");
+    svg.appendChild(centre.poly);
+    const lx = EX + 70, ly = 36;
+    el("path", { d: `M ${centre.x + 7} ${centre.y - 5} L ${lx - 4} ${ly + 8}`, stroke: css("--lobula"), "stroke-width": 1, fill: "none", "stroke-dasharray": "3 3" }, svg);
+    txt(svg, lx, ly, "coluna central", { class: "lbl", fill: css("--lobula"), "font-size": 10 });
+    txt(svg, lx, ly + 13, "a sua T4c é a célula", { class: "lbl", "font-size": 9 });
+    txt(svg, lx, ly + 25, "de que tiramos a impressão digital", { class: "lbl", "font-size": 9 });
+    const defs = el("defs", {}, svg);
+    const mk = el("marker", { id: "arrE", viewBox: "0 0 10 10", refX: 9, refY: 5, markerWidth: 6, markerHeight: 6, orient: "auto" }, defs);
+    el("path", { d: "M0,0 L10,5 L0,10 z", fill: css("--accent") }, mk);
+    const ax = EX - 228, ay = capY - 40, L = 56;
+    animate(el("path", { d: `M ${ax} ${ay} L ${ax + L * dir[0]} ${ay + L * dir[1]}`, stroke: css("--accent"), "stroke-width": 2.5, fill: "none", "stroke-dasharray": "6 4", "marker-end": "url(#arrE)" }, svg), "march 0.9s linear infinite");
+    txt(svg, ax - 4, ay - 12, "movimento · 25°", { class: "lbl", fill: css("--accent"), "font-size": 10 });
+    let paintClip = null, frameLabel = null;
+    if (sin) {
+      const LX = 232, polys = sin.uv.map(([u, v]) => el("polygon", { points: hexPath(LX + Math.sqrt(3) * S0 * (u + v / 2), EY + 1.5 * S0 * v, R0) }, svg));
+      paintClip = k => { const f = sin.lum[k]; polys.forEach((p, i) => p.setAttribute("fill", mix(dark, light, f[i] / 255))); };
+      txt(svg, LX, capY, `entrada de treino · Sintel «${sin.sequence}» · 19 fotogramas a 20 ms, 10× mais lento`, { "text-anchor": "middle", class: "lbl", "font-size": 10 });
+      frameLabel = txt(svg, LX, capY + 14, "", { "text-anchor": "middle", class: "lbl", "font-size": 9 });
+    }
+    function paint(t) {
+      paintEdge(t / 9);
+      if (paintClip) { const k = Math.floor(t / 0.2) % sin.frames; paintClip(k); frameLabel.textContent = `fotograma ${k + 1} de ${sin.frames} · t = ${k * 20} ms`; }
+    }
+    if (reduced) { paint(5); return; }
+    paint(0);
+    loop(svg, paint);
+  })();
+
+  // ---- 2. uma coluna -----------------------------------------------------------------------------
+  (function column() {
+    const svg = document.getElementById("column");
+    const groups = [
+      { name: "retina", color: "--retina", soft: "--retina-soft", types: ["R1", "R2", "R3", "R4", "R5", "R6", "R7", "R8"], note: "fotorreceptores · recebem a luz" },
+      { name: "lâmina", color: "--lamina", soft: "--lamina-soft", types: ["L1", "L2", "L3", "L4", "L5", "Lawf1", "Lawf2", "Am", "C2", "C3"], note: "primeiro relé · contraste, separação ON/OFF" },
+      { name: "medula", color: "--medulla", soft: "--medulla-soft", types: ["Mi1", "Mi2", "Mi3", "Mi4", "Mi9", "Mi10", "Mi11", "Mi12", "Mi13", "Mi14", "Mi15", "CT1(M10)", "T1", "T2", "T2a", "T3",
+        "Tm1", "Tm2", "Tm3", "Tm4", "Tm5Y", "Tm5a", "Tm5b", "Tm5c", "Tm9", "Tm16", "Tm20", "Tm28", "Tm30",
+        "TmY3", "TmY4", "TmY5a", "TmY9", "TmY10", "TmY13", "TmY14", "TmY15", "TmY18"], note: "atrasos e filtros · entradas dos detectores de movimento" },
+      { name: "lóbula e placa lobular", color: "--lobula", soft: "--lobula-soft", types: ["T4a", "T4b", "T4c", "T4d", "T5a", "T5b", "T5c", "T5d", "CT1(Lo1)"], note: "células T4 (ON) e T5 (OFF) selectivas à direcção" },
+    ];
+    const readout = new Set(["T1", "T2", "T2a", "T3", "T4a", "T4b", "T4c", "T4d", "T5a", "T5b", "T5c", "T5d", "Tm1", "Tm2", "Tm3", "Tm4", "Tm5Y", "Tm5a", "Tm5b", "Tm5c", "Tm9", "Tm16", "Tm20", "Tm28", "Tm30", "TmY3", "TmY4", "TmY5a", "TmY9", "TmY10", "TmY13", "TmY14", "TmY15", "TmY18"]);
+    for (let k = 3; k >= 1; k--) el("rect", { x: 60 + k * 18, y: 40 - k * 6, width: 560, height: 400, fill: "none", stroke: css("--rule"), "stroke-width": 1 }, svg);
+    el("rect", { x: 60, y: 40, width: 560, height: 400, fill: css("--ground"), stroke: css("--ink"), "stroke-width": 1 }, svg);
+    animate(el("path", { d: "M 90 6 L 90 34", stroke: css("--retina"), "stroke-width": 2.5, fill: "none", "marker-end": "url(#arrR)" }, svg), "pulse 3.8s ease-in-out infinite");
+    const defs = el("defs", {}, svg);
+    const mk = el("marker", { id: "arrR", viewBox: "0 0 10 10", refX: 9, refY: 5, markerWidth: 6, markerHeight: 6, orient: "auto" }, defs);
+    el("path", { d: "M0,0 L10,5 L0,10 z", fill: css("--retina") }, mk);
+    txt(svg, 100, 20, "luz", { class: "lbl" });
+    let y = 58;
+    groups.forEach(g => {
+      const rows = Math.ceil(g.types.length / 9);
+      const h = 22 + rows * 26;
+      el("rect", { x: 72, y, width: 536, height: h, fill: css(g.soft) }, svg);
+      el("rect", { x: 72, y, width: 5, height: h, fill: css(g.color) }, svg);
+      txt(svg, 86, y + 15, g.name.toUpperCase(), { class: "big", "font-size": 11, "letter-spacing": 1.2, fill: css(g.color) });
+      txt(svg, 600, y + 15, g.note, { class: "lbl", "text-anchor": "end", "font-size": 9.5 });
+      g.types.forEach((t, i) => {
+        const cx = 86 + (i % 9) * 58, cy = y + 24 + Math.floor(i / 9) * 26;
+        el("rect", { x: cx, y: cy, width: 52, height: 20, fill: css("--surface"), stroke: readout.has(t) ? css("--lobula") : css("--rule"), "stroke-width": readout.has(t) ? 1.6 : 1 }, svg);
+        txt(svg, cx + 26, cy + 14, t, { "text-anchor": "middle", "font-size": t.length > 6 ? 8.5 : 10 });
+      });
+      y += h + 8;
+    });
+    txt(svg, 640, 70, "× 721 colunas", { class: "big", "font-size": 15 });
+    txt(svg, 640, 92, "= 45 669 neurónios", { class: "lbl" });
+    txt(svg, 640, 130, "contornados a dourado:", { class: "lbl", "font-size": 10 });
+    txt(svg, 640, 146, "os 34 tipos que o", { class: "lbl", "font-size": 10 });
+    txt(svg, 640, 162, "descodificador lê", { class: "lbl", "font-size": 10 });
+    el("path", { d: "M 340 440 L 340 462", stroke: css("--lobula"), "stroke-width": 2.5, fill: "none" }, svg);
+    txt(svg, 350, 462, "para o descodificador (prancha 6)", { class: "lbl" });
+    animate(el("rect", { x: 72, y: 42, width: 536, height: 30, fill: css("--accent"), "fill-opacity": 0.16, "pointer-events": "none" }, svg), "sweep 3.8s cubic-bezier(.4,.1,.6,.9) infinite");
+  })();
+
+  // ---- 3. sinapses -------------------------------------------------------------------------------
+  (function synapse() {
+    const svg = document.getElementById("synapse");
+    const defs = el("defs", {}, svg);
+    const mk = el("marker", { id: "arrI", viewBox: "0 0 10 10", refX: 9, refY: 5, markerWidth: 7, markerHeight: 7, orient: "auto" }, defs);
+    el("path", { d: "M0,0 L10,5 L0,10 z", fill: css("--arrow") }, mk);
+    const pre = [{ x: 120, y: 70, n: "11,4" }, { x: 120, y: 170, n: "16,3" }, { x: 120, y: 270, n: "2,6" }];
+    const post = { x: 470, y: 170 };
+    pre.forEach((p, i) => {
+      el("circle", { cx: p.x, cy: p.y, r: 22, fill: css("--medulla-soft"), stroke: css("--medulla"), "stroke-width": 1.5 }, svg);
+      txt(svg, p.x, p.y + 4, "Mi1", { "text-anchor": "middle", "font-size": 11 });
+      txt(svg, p.x, p.y + 40, "coluna " + ["(0,0)", "(+1,0)", "(0,+1)"][i], { "text-anchor": "middle", class: "lbl", "font-size": 9.5 });
+      const w = 1.5 + Number(p.n.replace(",", ".")) / 5;
+      el("path", { id: "synp" + i, d: `M ${p.x + 24} ${p.y} C ${p.x + 150} ${p.y}, ${post.x - 150} ${post.y}, ${post.x - 26} ${post.y}`, stroke: css("--arrow"), "stroke-width": w, fill: "none", "marker-end": "url(#arrI)", opacity: 0.85 }, svg);
+      txt(svg, 290, (p.y + post.y) / 2 - 6 + (i === 1 ? -4 : 0), "N = " + p.n + " sinapses", { "text-anchor": "middle", class: "lbl", "font-size": 9.5 });
+    });
+    pre.forEach((p, i) => travel(svg, "synp" + i, "2.4s", { r: 3.5 + Number(p.n.replace(",", ".")) / 6, fill: css("--medulla"), stroke: css("--ground"), "stroke-width": 1.2 }, { begin: (i * 0.8) + "s" }));
+    animate(el("circle", { cx: post.x, cy: post.y, r: 26, fill: css("--lobula-soft"), stroke: css("--lobula"), "stroke-width": 1.8 }, svg),
+      "swell 0.8s ease-in-out infinite", { transformBox: "fill-box", transformOrigin: "center" });
+    txt(svg, post.x, post.y + 4, "T4c", { "text-anchor": "middle", "font-size": 12, class: "big" });
+    txt(svg, post.x, post.y + 46, "uma célula, uma coluna", { "text-anchor": "middle", class: "lbl", "font-size": 9.5 });
+    txt(svg, 560, 60, "peso de cada sinapse", { class: "lbl" });
+    txt(svg, 560, 86, "w = sinal · N · softplus(ρ)", { class: "big", "font-size": 14 });
+    const rows = [["sinal", "+1 para Mi1→T4c", "conectoma, fixo"], ["N", "contagem de sinapses, por ligação", "conectoma, fixa"], ["ρ", "UM valor para Mi1→T4c", "aprendido, partilhado pelas 721 colunas"]];
+    rows.forEach((r, i) => {
+      const y = 118 + i * 30;
+      txt(svg, 560, y, r[0], { class: "big", "font-size": 12 });
+      txt(svg, 600, y, r[1], { "font-size": 10.5 });
+      txt(svg, 600, y + 13, r[2], { class: "lbl", "font-size": 9 });
+    });
+    el("circle", { cx: 640, cy: 290, r: 34, fill: css("--ground"), stroke: css("--accent"), "stroke-width": 3 }, svg);
+    const needle = el("path", { d: "M 640 290 L 660 266", stroke: css("--accent"), "stroke-width": 3, "stroke-linecap": "round" }, svg);
+    txt(svg, 640, 345, "ρ(Mi1→T4c)", { "text-anchor": "middle", "font-size": 11 });
+    txt(svg, 640, 362, "um de 604 botões", { "text-anchor": "middle", class: "lbl", "font-size": 9.5 });
+    const f = [["1 513 231", "sinapses"], ["2 355", "grupos de contagem"], ["604", "magnitudes"]];
+    f.forEach((p, i) => {
+      const x = 90 + i * 150, y = 350;
+      txt(svg, x, y, p[0], { class: "big", "font-size": 14, "text-anchor": "middle" });
+      txt(svg, x, y + 16, p[1], { class: "lbl", "text-anchor": "middle", "font-size": 9.5 });
+      if (i < 2) el("path", { d: `M ${x + 60} ${y - 5} L ${x + 90} ${y - 5}`, stroke: css("--muted"), "stroke-width": 1.5, "marker-end": "url(#arrI)" }, svg);
+    });
+    txt(svg, 240, 392, "mesma cablagem, cada vez menos números livres", { class: "lbl", "text-anchor": "middle", "font-size": 9.5 });
+    el("path", { d: "M 40 408 L 860 408", stroke: css("--rule") }, svg);
+    txt(svg, 30, 432, "Mi1", { class: "lbl", "text-anchor": "end" });
+    txt(svg, 30, 477, "T4c", { class: "lbl", "text-anchor": "end" });
+    const links = [];
+    for (let i = 0; i < 9; i++) {
+      const x = 62 + i * 54;
+      el("circle", { cx: x, cy: 428, r: 8, fill: css("--medulla-soft"), stroke: css("--medulla"), "stroke-width": 1.2 }, svg);
+      el("circle", { cx: x, cy: 473, r: 8, fill: css("--lobula-soft"), stroke: css("--lobula"), "stroke-width": 1.2 }, svg);
+      links.push(el("path", { d: `M ${x} 437 L ${x} 463`, stroke: css("--arrow"), "stroke-width": 2, "marker-end": "url(#arrI)" }, svg));
+    }
+    txt(svg, 540, 438, "nove das 721 colunas: roda-se o único botão", { class: "lbl", "font-size": 9.5 });
+    txt(svg, 540, 452, "ρ(Mi1→T4c) e todas as ligações Mi1→T4c", { class: "lbl", "font-size": 9.5 });
+    txt(svg, 540, 466, "de todas as colunas mudam com ele", { class: "lbl", "font-size": 9.5 });
+    txt(svg, 540, 480, "(as contagens N mantêm as proporções)", { class: "lbl", "font-size": 9 });
+    loop(svg, t => {
+      const s = Math.sin(2 * Math.PI * t / 6);
+      needle.setAttribute("transform", `rotate(${(30 * s).toFixed(1)} 640 290)`);
+      links.forEach(p => p.setAttribute("stroke-width", (2 + 2.2 * s).toFixed(2)));
+    });
+  })();
+
+  // ---- 4. um neurónio ----------------------------------------------------------------------------
+  (function neuron() {
+    const svg = document.getElementById("neuron");
+    const defs = el("defs", {}, svg);
+    const mk = el("marker", { id: "arrN", viewBox: "0 0 10 10", refX: 9, refY: 5, markerWidth: 7, markerHeight: 7, orient: "auto" }, defs);
+    el("path", { d: "M0,0 L10,5 L0,10 z", fill: css("--arrow") }, mk);
+    const line = (d, extra) => el("path", Object.assign({ d, stroke: css("--arrow"), "stroke-width": 1.8, fill: "none", "marker-end": "url(#arrN)" }, extra || {}), svg);
+    const inputs = [["Σ w · relu(v_j)", "de todas as células pré-sinápticas", 70], ["b_t", "polarização de repouso do tipo", 150], ["x_i (luz)", "só nos fotorreceptores", 230]];
+    inputs.forEach(([a, b, y]) => {
+      el("rect", { x: 30, y: y - 20, width: 190, height: 40, fill: css("--ground"), stroke: css("--rule") }, svg);
+      txt(svg, 125, y - 1, a, { "text-anchor": "middle", "font-size": 12 });
+      txt(svg, 125, y + 13, b, { "text-anchor": "middle", class: "lbl", "font-size": 9 });
+      line(`M 222 ${y} L 300 150`);
+    });
+    el("circle", { cx: 318, cy: 150, r: 18, fill: css("--surface"), stroke: css("--ink"), "stroke-width": 1.5 }, svg);
+    txt(svg, 318, 155, "+", { "text-anchor": "middle", "font-size": 18 });
+    txt(svg, 318, 195, "impulso u_i", { "text-anchor": "middle", class: "lbl", "font-size": 9.5 });
+    line("M 338 150 L 400 150");
+    el("rect", { x: 402, y: 100, width: 190, height: 100, fill: css("--lamina-soft"), stroke: css("--lamina"), "stroke-width": 1.6 }, svg);
+    txt(svg, 497, 128, "integrador com fugas", { "text-anchor": "middle", class: "big", "font-size": 9.5 });
+    txt(svg, 497, 150, "v ← e^(−dt/τ) v + (1−e^(−dt/τ)) u", { "text-anchor": "middle", "font-size": 10 });
+    txt(svg, 497, 172, "τ_t · 65 valores · um por tipo", { "text-anchor": "middle", class: "lbl", "font-size": 9.5 });
+    txt(svg, 497, 188, "dt = 20 ms", { "text-anchor": "middle", class: "lbl", "font-size": 9.5 });
+    el("circle", { cx: 497, cy: 60, r: 18, fill: css("--ground"), stroke: css("--accent"), "stroke-width": 2.5 }, svg);
+    el("path", { d: "M 497 60 L 508 48", stroke: css("--accent"), "stroke-width": 2.5, "stroke-linecap": "round" }, svg);
+    txt(svg, 525, 64, "τ", { class: "big", "font-size": 14 });
+    el("path", { d: "M 497 78 L 497 98", stroke: css("--accent"), "stroke-width": 1.5, "stroke-dasharray": "3 3" }, svg);
+    el("path", { d: "M 430 210 C 430 250, 470 250, 480 82", stroke: css("--lobula"), "stroke-width": 1.5, fill: "none", "stroke-dasharray": "4 3" }, svg);
+    txt(svg, 380, 262, "só no braço B: v e u também alimentam o botão τ", { class: "lbl", fill: css("--lobula"), "font-size": 9.5 });
+    line("M 594 150 L 660 150");
+    el("rect", { x: 662, y: 128, width: 90, height: 44, fill: css("--ground"), stroke: css("--rule") }, svg);
+    txt(svg, 707, 147, "relu(v_i)", { "text-anchor": "middle", "font-size": 12 });
+    txt(svg, 707, 162, "o que os outros vêem", { "text-anchor": "middle", class: "lbl", "font-size": 8.5 });
+    line("M 754 150 L 830 150");
+    txt(svg, 838, 154, "→ sinapses", { class: "lbl", "font-size": 9.5 });
+    const g = el("g", { transform: "translate(600,215)" }, svg);
+    const TW = 186, TT = 0.6;
+    el("path", { d: `M 0 60 L ${TW} 60`, stroke: css("--rule"), "stroke-width": 1 }, g);
+    el("path", { d: `M 0 15 L ${TW} 15`, stroke: css("--muted"), "stroke-width": 1, "stroke-dasharray": "3 3" }, g);
+    txt(g, -4, 19, "u", { class: "lbl", "text-anchor": "end" });
+    txt(g, -4, 64, "v", { class: "lbl", "text-anchor": "end" });
+    const taus = DATA.tau && DATA.tau.tau_s && DATA.tau.tau_s["000"];
+    let fam;
+    if (taus) {
+      const sorted = Object.entries(taus).filter(e => e[1] > 0).sort((a, b) => a[1] - b[1]);
+      const lo = Math.log(sorted[0][1]), hi = Math.log(sorted[sorted.length - 1][1]), used = new Set();
+      fam = [0, 0.25, 0.5, 0.75, 1].map(f => {
+        const target = lo + f * (hi - lo);
+        let best = null;
+        sorted.forEach(e => { if (!used.has(e[0]) && (best === null || Math.abs(Math.log(e[1]) - target) < Math.abs(Math.log(best[1]) - target))) best = e; });
+        used.add(best[0]); return best;
+      }).sort((a, b) => a[1] - b[1]);
+    } else {
+      fam = [["τ = 50 ms", 0.05]];
+    }
+    const cols = ["--retina", "--medulla", "--lamina", "--lobula", "--accent"];
+    const traces = fam.map(([name, tau], i) => {
+      let d = "M 0 60";
+      for (let x = 0; x <= TW; x += 4) d += ` L ${x} ${(60 - 45 * (1 - Math.exp(-(x / TW) * TT / tau))).toFixed(1)}`;
+      el("path", { d, stroke: css(cols[i % cols.length]), "stroke-width": 1.6, fill: "none", opacity: 0.9 }, g);
+      txt(g, TW + 6, 12 + i * 11, taus ? `${name} ${(tau * 1000).toFixed(0)} ms` : name, { class: "lbl", "font-size": 8.5, fill: css(cols[i % cols.length]) });
+      return { tau, dot: el("circle", { cx: 0, cy: 60, r: 3.5, fill: css(cols[i % cols.length]), stroke: css("--ground"), "stroke-width": 1 }, g) };
+    });
+    const cursor = el("path", { d: "M 0 8 L 0 62", stroke: css("--muted"), "stroke-width": 1, "stroke-dasharray": "2 2" }, g);
+    const tlabel = txt(g, 0, 76, "", { class: "lbl", "font-size": 9, "text-anchor": "middle" });
+    txt(g, 0, 92, taus ? "o mesmo degrau · cinco dos 65 τ treinados (modelo 000)" : "v sobe em direcção a u por 1−e^(−dt/τ) a cada passo", { class: "lbl", "font-size": 9 });
+    if (taus) txt(g, 0, 104, "a maioria fica no piso de 20 ms; alguns são 10× mais lentos", { class: "lbl", "font-size": 9 });
+    function setT(t) {
+      const x = TW * t / TT;
+      cursor.setAttribute("transform", `translate(${x.toFixed(1)},0)`);
+      tlabel.setAttribute("x", x.toFixed(1)); tlabel.textContent = `${(t * 1000).toFixed(0)} ms`;
+      traces.forEach(tr => { tr.dot.setAttribute("cx", x.toFixed(1)); tr.dot.setAttribute("cy", (60 - 45 * (1 - Math.exp(-t / tr.tau))).toFixed(1)); });
+    }
+    setT(0.2);
+    loop(svg, t => setT((t / 3.2 % 1) * TT));
+  })();
+
+  // ---- 5. os braços ------------------------------------------------------------------------------
+  function signFan(svg, x0, signs, title) {
+    const defs = el("defs", {}, svg);
+    const mkP = el("marker", { id: "aP" + x0 + svg.id, viewBox: "0 0 10 10", refX: 9, refY: 5, markerWidth: 6, markerHeight: 6, orient: "auto" }, defs);
+    el("path", { d: "M0,0 L10,5 L0,10 z", fill: css("--lamina") }, mkP);
+    const mkM = el("marker", { id: "aM" + x0 + svg.id, viewBox: "0 0 10 10", refX: 9, refY: 5, markerWidth: 6, markerHeight: 6, orient: "auto" }, defs);
+    el("path", { d: "M0,0 L10,5 L0,10 z", fill: css("--retina") }, mkM);
+    el("circle", { cx: x0, cy: 70, r: 20, fill: css("--retina-soft"), stroke: css("--retina"), "stroke-width": 1.5 }, svg);
+    txt(svg, x0, 74, "R8", { "text-anchor": "middle", "font-size": 11 });
+    const targets = ["Mi1", "Mi4", "Mi9", "L1"];
+    const arrows = targets.map((t, i) => {
+      const y = 22 + i * 32, s = signs[i];
+      const a = el("path", { d: `M ${x0 + 22} 70 L ${x0 + 92} ${y}`, stroke: s > 0 ? css("--lamina") : css("--retina"), "stroke-width": 2, fill: "none", "marker-end": s > 0 ? `url(#aP${x0}${svg.id})` : `url(#aM${x0}${svg.id})` }, svg);
+      txt(svg, x0 + 100, y + 4, t + (s > 0 ? "  +" : "  −"), { "font-size": 11 });
+      return a;
+    });
+    txt(svg, x0 - 22, 142, title, { class: "lbl", "font-size": 9.5 });
+    return arrows;
+  }
+  function tauBand(svg, x0, gated, title, id) {
+    const g = el("g", { transform: `translate(${x0},150)` }, svg);
+    el("path", { d: "M 0 60 L 170 60", stroke: css("--rule") }, g);
+    el("path", { d: "M 0 0 L 0 60", stroke: css("--rule") }, g);
+    txt(g, -6, 34, "τ", { class: "lbl", "text-anchor": "end" });
+    txt(g, 85, 74, "tempo →", { class: "lbl", "text-anchor": "middle", "font-size": 9.5 });
+    if (!gated) {
+      el("path", { id, d: "M 0 30 L 170 30", stroke: css("--lamina"), "stroke-width": 2.5 }, g);
+    } else {
+      el("rect", { x: 0, y: 8, width: 170, height: 44, fill: css("--lobula-soft") }, g);
+      txt(g, 172, 12, "τ·e", { class: "lbl", "font-size": 9 });
+      txt(g, 172, 55, "τ/e", { class: "lbl", "font-size": 9 });
+      let d = "M 0 30";
+      for (let x = 0; x <= 170; x += 4) { const y = 30 - 18 * Math.sin(x / 22) * Math.exp(-((x - 90) ** 2) / 4000); d += ` L ${x} ${y.toFixed(1)}`; }
+      el("path", { id, d, stroke: css("--lobula"), "stroke-width": 2.5, fill: "none" }, g);
+    }
+    txt(g, 0, 90, title, { class: "lbl", "font-size": 9.5 });
+    travel(g, id, "3.6s", { r: 4.5, fill: gated ? css("--lobula") : css("--lamina"), stroke: css("--ground"), "stroke-width": 1.2 });
+  }
+  (function arms() {
+    const A = document.getElementById("armA"), B = document.getElementById("armB");
+    signFan(A, 60, [1, 1, 1, -1], "R8 tal como o conectoma o tem: misto");
+    const flipped = signFan(B, 60, [-1, -1, -1, -1], "R8 sob a lei de Dale: histamina, tudo inibitório");
+    flipped.slice(0, 3).forEach((a, i) => animate(a, `pulse 1.8s ease-in-out infinite ${i * 0.2}s`));
+    tauBand(A, 240, false, "τ fixo por tipo", "tauA");
+    tauBand(B, 240, true, "τ segue o estado do neurónio", "tauB");
+  })();
+
+  // ---- 5b. lei de Dale, grupo a grupo -------------------------------------------------------------
+  (function daleflip() {
+    const svg = document.getElementById("daleflip");
+    const fallback = [["R8", "Mi1"], ["R8", "Mi4"], ["R8", "Mi9"], ["R8", "Mi15"], ["Am", "L1"], ["Am", "T1"], ["C2", "L1"], ["C2", "L2"], ["C3", "L1"], ["C3", "L2"]]
+      .map(([s, t]) => ({ source: s, target: t, n_edges: 859, connectome_sign: 1, dale_sign: -1 }));
+    const groups = (DATA.tau && DATA.tau.dale_groups && DATA.tau.dale_groups.length) ? DATA.tau.dale_groups : fallback;
+    const total = groups.reduce((s, g) => s + g.n_edges, 0);
+    const n = groups.length, W = 80, GAPX = 6, x0 = (900 - (n * W + (n - 1) * GAPX)) / 2;
+    txt(svg, 450, 16, "LEI DE DALE · UM SINAL POR TIPO DE ORIGEM, DADO PELO SEU NEUROTRANSMISSOR", { class: "big", "font-size": 10.5, "letter-spacing": 1, "text-anchor": "middle", fill: css("--lobula") });
+    const chips = groups.map((g, i) => {
+      const x = x0 + i * (W + GAPX);
+      el("rect", { x, y: 28, width: W, height: 52, fill: css("--ground"), stroke: css("--rule") }, svg);
+      txt(svg, x + W / 2, 45, `${g.source} → ${g.target}`, { "text-anchor": "middle", "font-size": 10 });
+      const badge = el("circle", { cx: x + W / 2 - 14, cy: 64, r: 8, fill: css("--lamina-soft"), stroke: css("--lamina"), "stroke-width": 1.4 }, svg);
+      const sign = txt(svg, x + W / 2 - 14, 68, "+", { "text-anchor": "middle", "font-size": 12, class: "big" });
+      txt(svg, x + W / 2 + 12, 68, fmt(g.n_edges, 0), { class: "lbl", "font-size": 9 });
+      return { g, badge, sign };
+    });
+    const counter = txt(svg, 450, 108, "", { "text-anchor": "middle", "font-size": 10.5 });
+    function setState(k, flip) {
+      const c = chips[k], s = flip ? c.g.dale_sign : c.g.connectome_sign;
+      c.sign.textContent = s > 0 ? "+" : "−";
+      c.badge.setAttribute("fill", s > 0 ? css("--lamina-soft") : css("--retina-soft"));
+      c.badge.setAttribute("stroke", s > 0 ? css("--lamina") : css("--retina"));
+      c.badge.setAttribute("r", flip ? 9.5 : 8);
+    }
+    const PER = 0.8 + n * 0.7 + 3;
+    function paint(t) {
+      let flipped = 0, count = 0;
+      chips.forEach((c, k) => { const f = t >= 0.8 + k * 0.7; setState(k, f); if (f) { flipped++; count += c.g.n_edges; } });
+      counter.textContent = flipped === 0 ? `sinais do conectoma, tal como reportados · ${n} pares de tipos discordam do neurotransmissor` :
+        flipped < n ? `${flipped} de ${n} pares voltados a assinar · ${fmt(count, 0)} ligações até agora` :
+        `todos os ${n} pares voltados a assinar · ${fmt(total, 0)} ligações mudam de sinal · nenhuma delas sobre T4 ou T5`;
+    }
+    if (reduced) { paint(99); return; }
+    paint(0);
+    loop(svg, t => paint(t % PER));
+  })();
+
+  // ---- 6. leitura --------------------------------------------------------------------------------
+  (function readout() {
+    const svg = document.getElementById("readout");
+    const defs = el("defs", {}, svg);
+    const mk = el("marker", { id: "arrF", viewBox: "0 0 10 10", refX: 8, refY: 5, markerWidth: 5, markerHeight: 5, orient: "auto" }, defs);
+    el("path", { d: "M0,0 L10,5 L0,10 z", fill: css("--lobula") }, mk);
+    let front = null;
+    for (let k = 5; k >= 0; k--) {
+      const g = el("g", { transform: `translate(${120 + k * 9},${150 - k * 9})`, opacity: k === 0 ? 1 : 0.55 }, svg);
+      const filled = lattice(g, 4, 0, 0, 9, 0.6);
+      filled.forEach(c => c.poly.setAttribute("fill", k === 0 ? css("--lobula-soft") : css("--ground")));
+      lattice(g, 4, 0, 0, 9, 0.6).forEach(c => { c.poly.setAttribute("fill", "none"); c.poly.setAttribute("stroke", css("--rule")); });
+      if (k === 0) front = filled;
+    }
+    txt(svg, 120, 285, "34 canais × 721 colunas", { "text-anchor": "middle", class: "lbl", "font-size": 9.5 });
+    txt(svg, 120, 301, "voltagens dos tipos de leitura", { "text-anchor": "middle", class: "lbl", "font-size": 9.5 });
+    const chain = [["conv. hex.", "34 → 8 · k = 5"], ["batch norm", "softplus · dropout 0,5"], ["conv. hex.", "8 → 2 · k = 5"]];
+    chain.forEach((c, i) => {
+      const x = 300 + i * 130;
+      animate(el("rect", { x, y: 120, width: 110, height: 58, fill: css("--medulla-soft"), stroke: css("--medulla"), "stroke-width": 1.4 }, svg), `boxOn 3.3s linear infinite ${0.55 + i * 0.55}s`);
+      txt(svg, x + 55, 144, c[0], { "text-anchor": "middle", class: "big", "font-size": 11 });
+      txt(svg, x + 55, 163, c[1], { "text-anchor": "middle", class: "lbl", "font-size": 9 });
+      el("path", { d: `M ${x + 112} 149 L ${x + 128} 149`, stroke: css("--arrow"), "stroke-width": 1.6 }, svg);
+    });
+    el("path", { d: "M 230 149 L 298 149", stroke: css("--arrow"), "stroke-width": 1.6 }, svg);
+    el("path", { id: "chainp", d: "M 232 149 L 690 149", fill: "none", stroke: "none" }, svg);
+    txt(svg, 495, 205, "DecoderGAVP · convoluções hexagonais, a mesma malha do olho", { "text-anchor": "middle", class: "lbl", "font-size": 9.5 });
+    const g = el("g", { transform: "translate(770,150)" }, svg);
+    const cells = lattice(g, 4, 0, 0, 10, 0.6);
+    cells.forEach(c => { c.poly.setAttribute("fill", css("--ground")); c.poly.setAttribute("stroke", css("--rule")); });
+    const arrowsG = el("g", {}, g);
+    const arrows = cells.map(c => {
+      const ang = Math.atan2(c.y, c.x + 60) * 0.35 + 0.35, m = 6 + 3 * Math.cos(c.x / 30);
+      return el("path", { d: `M ${c.x - m * Math.cos(ang)} ${c.y - m * Math.sin(ang)} L ${c.x + m * Math.cos(ang)} ${c.y + m * Math.sin(ang)}`, stroke: css("--lobula"), "stroke-width": 1.6, "marker-end": "url(#arrF)" }, arrowsG);
+    });
+    travel(svg, "chainp", "3.3s", { r: 5, fill: css("--accent"), stroke: css("--ground"), "stroke-width": 1.2 });
+    const order = front.map((c, i) => i).sort((a, b) => (front[a].y - front[b].y) || (front[a].x - front[b].x));
+    const hexDist = (a, b) => Math.max(Math.abs(a.u - b.u), Math.abs(a.v - b.v), Math.abs(a.u + a.v - b.u - b.v));
+    const kernelLabel = txt(svg, 120, 60, "", { "text-anchor": "middle", class: "lbl", "font-size": 9, fill: css("--lobula") });
+    const PER = order.length * 0.09 + 1.6;
+    function paintKernel(t) {
+      const step = Math.floor(t / 0.09), k = Math.min(step, order.length - 1), done = step >= order.length;
+      const centre = front[order[k]];
+      front.forEach(c => c.poly.setAttribute("fill", !done && hexDist(c, centre) <= 2 ? (hexDist(c, centre) === 0 ? css("--lobula") : css("--accent")) : css("--lobula-soft")));
+      order.forEach((idx, j) => arrows[idx].setAttribute("opacity", done || j <= k ? 1 : 0.18));
+      kernelLabel.textContent = done ? "todas as colunas descodificadas" : `núcleo k = 5 · coluna ${k + 1} de ${order.length}`;
+    }
+    txt(svg, 770, 285, "fluxo previsto · 2 números por coluna", { "text-anchor": "middle", class: "lbl", "font-size": 9.5 });
+    txt(svg, 770, 301, "comparado com o fluxo verdadeiro do Sintel", { "text-anchor": "middle", class: "lbl", "font-size": 9.5 });
+    txt(svg, 495, 345, "perda = distância L2 média entre as setas de fluxo previstas e as verdadeiras", { "text-anchor": "middle", "font-size": 11 });
+    if (reduced) { paintKernel(99); return; }
+    paintKernel(0);
+    loop(svg, t => paintKernel(t % PER));
+  })();
+
+  // ---- 7. um passo de treino ---------------------------------------------------------------------
+  (function training() {
+    const svg = document.getElementById("training");
+    const defs = el("defs", {}, svg);
+    const mk = el("marker", { id: "arrT", viewBox: "0 0 10 10", refX: 9, refY: 5, markerWidth: 6, markerHeight: 6, orient: "auto" }, defs);
+    el("path", { d: "M0,0 L10,5 L0,10 z", fill: css("--arrow") }, mk);
+    const mkB = el("marker", { id: "arrB", viewBox: "0 0 10 10", refX: 9, refY: 5, markerWidth: 6, markerHeight: 6, orient: "auto" }, defs);
+    el("path", { d: "M0,0 L10,5 L0,10 z", fill: css("--lobula") }, mkB);
+    txt(svg, 40, 30, "0,5 s de cinzento primeiro", { class: "lbl", "font-size": 9.5 });
+    el("rect", { x: 40, y: 40, width: 120, height: 40, fill: css("--ground"), stroke: css("--rule") }, svg);
+    txt(svg, 100, 64, "estabilizar", { "text-anchor": "middle", "font-size": 11 });
+    for (let i = 0; i < 19; i++) {
+      const x = 180 + i * 31;
+      animate(el("rect", { x, y: 40, width: 26, height: 40, fill: css("--lamina-soft"), stroke: css("--lamina"), "stroke-width": 1 }, svg), `frameOn 4.4s linear infinite ${(i * 0.07).toFixed(2)}s`);
+      if (i === 0 || i === 18 || i % 6 === 0) txt(svg, x + 13, 66, String(i + 1), { "text-anchor": "middle", "font-size": 10 });
+    }
+    txt(svg, 180, 30, "19 fotogramas · 20 ms cada · 380 ms", { class: "lbl", "font-size": 9.5 });
+    el("path", { d: "M 770 60 L 800 60", stroke: css("--arrow"), "stroke-width": 1.6, "marker-end": "url(#arrT)" }, svg);
+    animate(el("rect", { x: 804, y: 40, width: 70, height: 40, fill: css("--retina-soft"), stroke: css("--retina"), "stroke-width": 1.4 }, svg), "lossOn 4.4s linear infinite");
+    txt(svg, 839, 64, "perda", { "text-anchor": "middle", "font-size": 11 });
+    animate(el("path", { d: "M 839 84 L 839 120 L 200 120 L 200 100", stroke: css("--lobula"), "stroke-width": 1.8, fill: "none", "stroke-dasharray": "5 4", "marker-end": "url(#arrB)" }, svg), "gradBack 4.4s linear infinite");
+    txt(svg, 520, 138, "gradiente para trás pelos 19 passos → o Adam actualiza os 929 números", { "text-anchor": "middle", class: "lbl", "font-size": 9.5 });
+    txt(svg, 520, 170, "lote de 4 clipes por passo · 12 passos por passagem pelo Sintel · 250 000 passos por omissão no flyvis", { "text-anchor": "middle", class: "lbl", "font-size": 9.5 });
+  })();
+
+  // ---- 8. a rede a disparar -----------------------------------------------------------------------
+  (function firing() {
+    const svg = document.getElementById("firing");
+    const defs = el("defs", {}, svg);
+    const mk = el("marker", { id: "arrFire", viewBox: "0 0 10 10", refX: 9, refY: 5, markerWidth: 6, markerHeight: 6, orient: "auto" }, defs);
+    el("path", { d: "M0,0 L10,5 L0,10 z", fill: css("--arrow") }, mk);
+    const R = 8.2, GAP = 0.8, S = R + GAP, ROW = 1.5 * S;
+    const dark = hx("--hex-dark"), light = hx("--hex-light");
+    const layers = [
+      { title: "retina", sub: "R1–R8 · luminância", col: "--retina", soft: "--retina-soft" },
+      { title: "lâmina", sub: "L1 · transiente ON", col: "--lamina", soft: "--lamina-soft" },
+      { title: "medula", sub: "Mi1 · rápida", col: "--medulla", soft: "--medulla-soft" },
+      { title: "medula", sub: "Mi9 / Mi4 · 250 ms depois", col: "--medulla", soft: "--medulla-soft" },
+      { title: "placa lobular", sub: "T4c · rápida × atrasada", col: "--lobula", soft: "--lobula-soft" },
+    ];
+    const x0 = 95, dx = 178, cy = 150;
+    const patches = layers.map((L, i) => {
+      const g = el("g", { transform: `translate(${x0 + i * dx},${cy})` }, svg);
+      const cells = lattice(g, 4, 0, 0, R, GAP);
+      txt(svg, x0 + i * dx, 262, L.title, { class: "big", "font-size": 11, "text-anchor": "middle", fill: css(L.col) });
+      txt(svg, x0 + i * dx, 278, L.sub, { class: "lbl", "text-anchor": "middle", "font-size": 9 });
+      if (i < layers.length - 1) el("path", { d: `M ${x0 + i * dx + 76} ${cy} L ${x0 + (i + 1) * dx - 80} ${cy}`, stroke: css("--arrow"), "stroke-width": 1.4, "marker-end": "url(#arrFire)" }, svg);
+      return { L, cells, colA: hx(L.col), colB: hx(L.soft) };
+    });
+    const tx = x0 + 4 * dx;
+    el("path", { d: `M ${tx - 82} ${cy + 44} L ${tx - 82} ${cy + 6}`, stroke: css("--lobula"), "stroke-width": 1.6, fill: "none", "marker-end": "url(#arrFire)" }, svg);
+    txt(svg, tx, cy + 78, "a entrada atrasada vem da", { class: "lbl", "font-size": 8.5, "text-anchor": "middle" });
+    txt(svg, tx, cy + 89, "coluna uma fila abaixo", { class: "lbl", "font-size": 8.5, "text-anchor": "middle" });
+    el("rect", { x: tx - 60, y: 296, width: 120, height: 8, fill: css("--rule") }, svg);
+    const meter = el("rect", { x: tx - 60, y: 296, width: 0, height: 8, fill: css("--lobula") }, svg);
+    txt(svg, tx, 320, "saída da T4c", { class: "lbl", "text-anchor": "middle", "font-size": 9.5 });
+    const dirArrow = txt(svg, x0 - 78, cy + 8, "↑", { class: "big", "font-size": 26, "text-anchor": "middle", fill: css("--accent") });
+    txt(svg, x0 - 78, cy + 26, "aresta", { class: "lbl", "text-anchor": "middle", "font-size": 9.5 });
+    const caption = txt(svg, 450, 350, "", { "text-anchor": "middle", "font-size": 11 });
+    const V = 52, W = 4, SWEEP = 4, FADE = 1, PERIOD = 2 * (SWEEP + FADE), P0 = 4 * ROW + 2 * R + 20;
+    const sig = x => 1 / (1 + Math.exp(-x));
+    const clip = x => x < 0 ? 0 : x > 1 ? 1 : x;
+    function lum(p, t) {
+      const ph = ((t % PERIOD) + PERIOD) % PERIOD;
+      if (ph < SWEEP) return sig((-P0 + V * ph - p) / W);
+      if (ph < SWEEP + FADE) return sig((-P0 + V * SWEEP - p) / W) * (1 - (ph - SWEEP) / FADE);
+      const q = ph - SWEEP - FADE;
+      if (q < SWEEP) return sig((p - (P0 - V * q)) / W);
+      return sig((p - (P0 - V * SWEEP)) / W) * (1 - (q - SWEEP) / FADE);
+    }
+    const transient = (p, t) => clip(5 * (lum(p, t) - lum(p, t - 0.08)));
+    const fast = (p, t) => transient(p, t - 0.05);
+    const slow = (p, t) => transient(p, t - 0.30);
+    const t4c = (p, t) => clip(3 * fast(p, t) * slow(p - ROW, t));
+    const fns = [null, transient, fast, slow, t4c];
+    function paint(t) {
+      let total = 0;
+      patches.forEach((P, i) => {
+        P.cells.forEach(c => {
+          const p = -c.y;
+          if (i === 0) { c.poly.setAttribute("fill", mix(dark, light, lum(p, t))); return; }
+          const a = fns[i](p, t);
+          if (i === 4) total += a;
+          c.poly.setAttribute("fill", mix(P.colB, P.colA, a));
+        });
+      });
+      meter.setAttribute("width", (120 * clip(3 * total / patches[4].cells.length)).toFixed(1));
+      const ph = ((t % PERIOD) + PERIOD) % PERIOD, up = ph < SWEEP + FADE;
+      dirArrow.textContent = up ? "↑" : "↓";
+      caption.textContent = up ? "aresta a subir, a direcção preferida da T4c: os sinais rápido e atrasado coincidem e a T4c dispara"
+                               : "aresta a descer, a direcção nula: o sinal atrasado chega tarde demais e a T4c fica em silêncio";
+    }
+    if (reduced) { paint(2.4); return; }
+    paint(0);
+    loop(svg, paint);
+  })();
+
+  // ---- 9. as entradas da T4c, modelo a modelo (medido) -----------------------------------------------
+  (function mixes() {
+    const svg = document.getElementById("mixes");
+    const fp = DATA.fp;
+    if (!fp) { txt(svg, 450, 180, "dados das impressões digitais em falta", { class: "lbl", "text-anchor": "middle" }); return; }
+    const sts = fp.source_types, cen = fp.released.pd_share_centroid, sd = fp.released.pd_share_sd, M = fp.released.pd_share_models;
+    const seq = [
+      ["média do conjunto", cen, "excitação por Mi1 equilibrada pela inibição de Mi4, CT1, Mi9 e TmY15"],
+      ["modelo 009", M["009"], "o mais próximo do centro: a média, num só modelo"],
+      ["modelo 000", M["000"], "Mi1 contra Mi4, apenas; Mi9 e Tm3 ausentes"],
+      ["modelo 049", M["049"], "dominado pela entrada lateral de T4a; quase nada de Mi1"],
+      ["modelo 046", M["046"], "dominado por Tm3, com a sua própria recorrência; Mi1 quase ausente"],
+      ["modelo 038", M["038"], "Mi1 contra Mi9, e nada mais"],
+      ["modelo 034", M["034"], "a sua própria recorrência mais Tm3"],
+    ].filter(s => s[1]);
+    const X0 = 70, X1 = 880, Y0 = 190, SC = 500;
+    const bw = (X1 - X0) / sts.length;
+    el("path", { d: `M ${X0} ${Y0} L ${X1} ${Y0}`, stroke: css("--ink"), "stroke-width": 1 }, svg);
+    [[0.2, "+0,2"], [0.1, "+0,1"], [-0.1, "−0,1"], [-0.2, "−0,2"]].forEach(([v, s]) => {
+      el("path", { d: `M ${X0} ${Y0 - v * SC} L ${X1} ${Y0 - v * SC}`, stroke: css("--rule"), "stroke-width": 1, "stroke-dasharray": "2 3" }, svg);
+      txt(svg, X0 - 6, Y0 - v * SC + 4, s, { class: "lbl", "font-size": 9, "text-anchor": "end" });
+    });
+    txt(svg, X0 - 6, Y0 + 4, "0", { class: "lbl", "font-size": 9, "text-anchor": "end" });
+    txt(svg, 22, 30, "fracção da", { class: "lbl", "font-size": 8.5 });
+    txt(svg, 22, 42, "entrada da T4c", { class: "lbl", "font-size": 8.5 });
+    txt(svg, 22, 54, "excitação ↑", { class: "lbl", "font-size": 8.5, fill: css("--lamina") });
+    txt(svg, 22, 66, "inibição ↓", { class: "lbl", "font-size": 8.5, fill: css("--retina") });
+    const bars = sts.map((s, i) => {
+      const xc = X0 + bw * (i + 0.5);
+      el("path", { d: `M ${xc - 9} ${Y0 - (cen[i] + sd[i]) * SC} L ${xc + 9} ${Y0 - (cen[i] + sd[i]) * SC} M ${xc - 9} ${Y0 - (cen[i] - sd[i]) * SC} L ${xc + 9} ${Y0 - (cen[i] - sd[i]) * SC} M ${xc} ${Y0 - (cen[i] + sd[i]) * SC} L ${xc} ${Y0 - (cen[i] - sd[i]) * SC}`, stroke: css("--muted"), "stroke-width": 1, opacity: 0.6 }, svg);
+      txt(svg, xc, 330, s, { "text-anchor": "middle", "font-size": s.length > 6 ? 8.5 : 10 });
+      return el("rect", { x: xc - 16, y: Y0, width: 32, height: 0, fill: css("--lamina"), opacity: 0.85 }, svg);
+    });
+    const title = txt(svg, 450, 28, "", { "text-anchor": "middle", class: "big", "font-size": 14 });
+    const sub = txt(svg, 450, 46, "", { "text-anchor": "middle", class: "lbl", "font-size": 9.5 });
+    const ease = u => u < 0.5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2;
+    function paint(t) {
+      const PER = 3.1, k = Math.floor(t / PER) % seq.length, ph = (t % PER), next = (k + 1) % seq.length;
+      const u = ph < 2.4 ? 0 : ease((ph - 2.4) / 0.7);
+      const from = seq[k][1], to = seq[next][1];
+      sts.forEach((s, i) => {
+        const v = from[i] + (to[i] - from[i]) * u, h = Math.abs(v) * SC;
+        bars[i].setAttribute("y", v >= 0 ? Y0 - h : Y0);
+        bars[i].setAttribute("height", h.toFixed(1));
+        bars[i].setAttribute("fill", v >= 0 ? css("--lamina") : css("--retina"));
+      });
+      const show = u < 0.5 ? seq[k] : seq[next];
+      title.textContent = show[0]; sub.textContent = show[2];
+    }
+    paint(0);
+    loop(svg, paint);
+  })();
+
+  // ---- 10. sintonia direccional de uma T4c treinada (medido) -----------------------------------------
+  (function tuning() {
+    const svg = document.getElementById("tuning");
+    const T = DATA.tuning;
+    if (!T) { txt(svg, 450, 190, "dados de sintonia em falta", { class: "lbl", "text-anchor": "middle" }); return; }
+    const dark = hx("--hex-dark"), lightHex = hx("--hex-light");
+    const angles = T.angles, time = T.time_s_subsampled, trc = T.traces.T4c, pk = T.peak.T4c;
+    const pmax = Math.max(...pk, 1e-6);
+    const EX = 140, EY = 165, R0 = 6, G0 = 0.5;
+    const cells = lattice(svg, 8, EX, EY, R0, G0);
+    txt(svg, EX, 292, "aresta na direcção mostrada", { "text-anchor": "middle", class: "lbl", "font-size": 9 });
+    const angLabel = txt(svg, EX, 308, "", { "text-anchor": "middle", class: "big", "font-size": 13 });
+    const TX0 = 320, TX1 = 560, TY0 = 70, TY1 = 270;
+    const vmin = Math.min(0, ...trc.flat()), vmax = Math.max(...trc.flat());
+    const tx = t => TX0 + (TX1 - TX0) * (t - time[0]) / (time[time.length - 1] - time[0]);
+    const ty = v => TY1 - (TY1 - TY0) * (v - vmin) / (vmax - vmin);
+    el("path", { d: `M ${TX0} ${ty(0)} L ${TX1} ${ty(0)}`, stroke: css("--rule") }, svg);
+    el("path", { d: `M ${tx(0)} ${TY0} L ${tx(0)} ${TY1}`, stroke: css("--rule"), "stroke-dasharray": "3 3" }, svg);
+    txt(svg, tx(0) + 4, TY0 + 10, "a aresta entra", { class: "lbl", "font-size": 9 });
+    txt(svg, TX0, TY1 + 16, `${fmt(time[0], 1)} s`, { class: "lbl", "font-size": 9 });
+    txt(svg, TX1, TY1 + 16, `${fmt(time[time.length - 1], 1)} s`, { class: "lbl", "font-size": 9, "text-anchor": "end" });
+    txt(svg, TX0 - 6, ty(vmax) + 4, fmt(vmax, 1), { class: "lbl", "font-size": 9, "text-anchor": "end" });
+    txt(svg, TX0 - 6, ty(0) + 4, "0", { class: "lbl", "font-size": 9, "text-anchor": "end" });
+    txt(svg, (TX0 + TX1) / 2, TY1 + 32, "voltagem da T4c central · modelo 000", { "text-anchor": "middle", class: "lbl", "font-size": 9.5 });
+    const ghost = el("path", { d: "", stroke: css("--lobula"), "stroke-width": 1, fill: "none", opacity: 0.25 }, svg);
+    const live = el("path", { d: "", stroke: css("--lobula"), "stroke-width": 2.2, fill: "none" }, svg);
+    const tip = el("circle", { cx: 0, cy: 0, r: 4, fill: css("--lobula"), stroke: css("--ground"), "stroke-width": 1.2 }, svg);
+    const PX = 745, PY = 150, PR = 96;
+    [0.5, 1].forEach(f => el("circle", { cx: PX, cy: PY, r: PR * f, fill: "none", stroke: css("--rule"), "stroke-dasharray": f === 1 ? "" : "3 3" }, svg));
+    angles.forEach(a => { const r = Math.PI / 180 * a; el("path", { d: `M ${PX} ${PY} L ${PX + PR * Math.cos(r)} ${PY - PR * Math.sin(r)}`, stroke: css("--rule"), "stroke-width": 0.7 }, svg);
+      txt(svg, PX + (PR + 13) * Math.cos(r), PY - (PR + 13) * Math.sin(r) + 3, a + "°", { class: "lbl", "font-size": 8.5, "text-anchor": "middle" }); });
+    const polar = (peaks, col, width, op, dash) => {
+      const d = peaks.map((p, i) => { const r = Math.PI / 180 * angles[i], q = PR * p / pmax; return `${i ? "L" : "M"} ${(PX + q * Math.cos(r)).toFixed(1)} ${(PY - q * Math.sin(r)).toFixed(1)}`; }).join(" ") + " Z";
+      return el("path", { d, stroke: css(col), "stroke-width": width, fill: "none", opacity: op, "stroke-dasharray": dash || "" }, svg);
+    };
+    [["T4a", "--lamina"], ["T4b", "--medulla"], ["T4d", "--retina"]].forEach(([t, col]) => polar(T.peak[t], col, 1, 0.45, "4 3"));
+    txt(svg, PX, 326, "a ténue, tracejado: T4a, T4b, T4d do mesmo modelo", { class: "lbl", "font-size": 8.5, "text-anchor": "middle" });
+    txt(svg, PX, 338, "(a curva da T4d é a quase invisível)", { class: "lbl", "font-size": 8.5, "text-anchor": "middle" });
+    const fillPoly = el("path", { d: "", fill: css("--lobula"), opacity: 0.18, stroke: "none" }, svg);
+    const livePoly = el("path", { d: "", stroke: css("--lobula"), "stroke-width": 2, fill: "none" }, svg);
+    const dots = angles.map(() => el("circle", { cx: PX, cy: PY, r: 3.5, fill: css("--lobula"), stroke: css("--ground"), "stroke-width": 1, opacity: 0 }, svg));
+    txt(svg, PX, 292, "resposta de pico por direcção", { "text-anchor": "middle", class: "lbl", "font-size": 9 });
+    txt(svg, PX, 308, `preferida ${angles[pk.indexOf(Math.max(...pk))]}° · ISD 0,96`, { "text-anchor": "middle", class: "big", "font-size": 13 });
+    const SWEEP = 2.2, HOLD = 0.6, PER = SWEEP + HOLD;
+    const tspan = [time[0], time[time.length - 1]];
+    function paint(t) {
+      const k = Math.floor(t / (PER * angles.length) % 1 * angles.length), ph = t % PER, u = Math.min(ph / SWEEP, 1);
+      const a = angles[k], r = Math.PI / 180 * a, dir = [Math.cos(r), -Math.sin(r)];
+      angLabel.textContent = `${a}°`;
+      const tm = tspan[0] + u * (tspan[1] - tspan[0]);
+      const proj = cells.map(c => (c.x - EX) * dir[0] + (c.y - EY) * dir[1]);
+      const lo = Math.min(...proj), hi = Math.max(...proj);
+      const edge = lo + (hi - lo) * Math.min(Math.max(tm / 0.43, 0), 1) + (tm < 0 ? -20 : 0) + (tm > 0.43 ? 20 : 0);
+      cells.forEach((c, i) => c.poly.setAttribute("fill", mix(dark, lightHex, tm < 0 ? 0 : 1 - 1 / (1 + Math.exp(-(proj[i] - edge) / 8)))));
+      const n = time.length, m = Math.max(2, Math.round(u * n));
+      const pathFor = (upto) => trc[k].slice(0, upto).map((v, i) => `${i ? "L" : "M"} ${tx(time[i]).toFixed(1)} ${ty(v).toFixed(1)}`).join(" ");
+      ghost.setAttribute("d", pathFor(n)); live.setAttribute("d", pathFor(m));
+      tip.setAttribute("cx", tx(time[m - 1]).toFixed(1)); tip.setAttribute("cy", ty(trc[k][m - 1]).toFixed(1));
+      const doneCount = (ph >= SWEEP ? k + 1 : k);
+      const pts = angles.map((_, i) => { const rr = Math.PI / 180 * angles[i], q = PR * pk[i] / pmax; return [PX + q * Math.cos(rr), PY - q * Math.sin(rr)]; });
+      dots.forEach((d, i) => { d.setAttribute("opacity", i < doneCount ? 1 : 0); d.setAttribute("cx", pts[i][0].toFixed(1)); d.setAttribute("cy", pts[i][1].toFixed(1)); });
+      const seg = pts.slice(0, doneCount);
+      livePoly.setAttribute("d", seg.length > 1 ? seg.map((p, i) => `${i ? "L" : "M"} ${p[0].toFixed(1)} ${p[1].toFixed(1)}`).join(" ") + (doneCount === angles.length ? " Z" : "") : "");
+      fillPoly.setAttribute("d", doneCount === angles.length ? livePoly.getAttribute("d") : "");
+    }
+    if (reduced) { paint(PER * angles.length - 0.1); return; }
+    paint(0);
+    loop(svg, paint);
+  })();
+
+  // ---- 11. sessenta mil passos, repetidos (medido) ----------------------------------------------------
+  (function playback() {
+    const svg = document.getElementById("playback");
+    const fp = DATA.fp;
+    if (!fp) { txt(svg, 450, 180, "dados da corrida em falta", { class: "lbl", "text-anchor": "middle" }); return; }
+    const A = fp.runs.A, it = A.iterations, val = A.val, shares = A.pd_share, sts = fp.source_types, cen = fp.released.pd_share_centroid;
+    const LX0 = 60, LX1 = 470, LY0 = 40, LY1 = 270, imax = it[it.length - 1], vlo = 1204, vhi = 1214;
+    const lx = i => LX0 + (LX1 - LX0) * i / imax, ly = v => LY1 - (LY1 - LY0) * (v - vlo) / (vhi - vlo);
+    el("path", { d: `M ${LX0} ${LY0} L ${LX0} ${LY1} L ${LX1} ${LY1}`, stroke: css("--ink"), "stroke-width": 1, fill: "none" }, svg);
+    [1204, 1206, 1208, 1210, 1212, 1214].forEach(v => { el("path", { d: `M ${LX0} ${ly(v)} L ${LX1} ${ly(v)}`, stroke: css("--rule"), "stroke-dasharray": "2 3" }, svg); txt(svg, LX0 - 6, ly(v) + 4, String(v), { class: "lbl", "font-size": 9, "text-anchor": "end" }); });
+    [0, 20000, 40000, 60000].forEach(i => txt(svg, lx(i), LY1 + 16, (i / 1000) + " mil", { class: "lbl", "font-size": 9, "text-anchor": "middle" }));
+    txt(svg, (LX0 + LX1) / 2, LY1 + 32, "perda de validação · braço A · um ponto por ponto de controlo", { "text-anchor": "middle", class: "lbl", "font-size": 9.5 });
+    txt(svg, LX0 + 8, LY1 - 6, "os modelos treinados estão em 1103–1147, 60 abaixo do fundo deste eixo", { class: "lbl", "font-size": 9, fill: css("--retina") });
+    const full = val.map((v, i) => `${i ? "L" : "M"} ${lx(it[i]).toFixed(1)} ${ly(v).toFixed(1)}`).join(" ");
+    el("path", { d: full, stroke: css("--lamina"), "stroke-width": 1, fill: "none", opacity: 0.3 }, svg);
+    const live = el("path", { d: "", stroke: css("--lamina"), "stroke-width": 2, fill: "none" }, svg);
+    const tip = el("circle", { r: 4, fill: css("--lamina"), stroke: css("--ground"), "stroke-width": 1.2 }, svg);
+    const label = txt(svg, 0, 0, "", { class: "lbl", "font-size": 10 });
+    const BX0 = 540, BX1 = 880, BY = 190, SC = 420, bw = (BX1 - BX0) / sts.length;
+    el("path", { d: `M ${BX0} ${BY} L ${BX1} ${BY}`, stroke: css("--ink"), "stroke-width": 1 }, svg);
+    txt(svg, (BX0 + BX1) / 2, 28, "entradas da T4c neste ponto de controlo", { "text-anchor": "middle", class: "big", "font-size": 12 });
+    txt(svg, (BX0 + BX1) / 2, 44, "preenchido: braço A · contornado: média dos 50 modelos treinados", { "text-anchor": "middle", class: "lbl", "font-size": 9 });
+    const bars = sts.map((s, i) => {
+      const xc = BX0 + bw * (i + 0.5), h = Math.abs(cen[i]) * SC;
+      el("rect", { x: xc - 11, y: cen[i] >= 0 ? BY - h : BY, width: 22, height: h, fill: "none", stroke: css("--muted"), "stroke-width": 1, "stroke-dasharray": "2 2" }, svg);
+      txt(svg, xc, 330, s, { "text-anchor": "middle", "font-size": s.length > 6 ? 7.5 : 9 });
+      return el("rect", { x: xc - 8, y: BY, width: 16, height: 0, fill: css("--lamina"), opacity: 0.9 }, svg);
+    });
+    const distLabel = txt(svg, (BX0 + BX1) / 2, 60, "", { "text-anchor": "middle", class: "lbl", "font-size": 9 });
+    const PER = it.length * 0.18 + 2.5;
+    function paint(t) {
+      const ph = t % PER, k = Math.min(Math.floor(ph / 0.18), it.length - 1);
+      live.setAttribute("d", val.slice(0, k + 1).map((v, i) => `${i ? "L" : "M"} ${lx(it[i]).toFixed(1)} ${ly(v).toFixed(1)}`).join(" "));
+      tip.setAttribute("cx", lx(it[k]).toFixed(1)); tip.setAttribute("cy", ly(val[k]).toFixed(1));
+      label.setAttribute("x", Math.min(lx(it[k]) + 8, LX1 - 130)); label.setAttribute("y", Math.max(ly(val[k]) - 10, LY0 + 10));
+      label.textContent = `passo ${fmt(it[k], 0)} · perda ${fmt(val[k], 1)}`;
+      sts.forEach((s, i) => { const v = shares[k][i], h = Math.abs(v) * SC; bars[i].setAttribute("y", v >= 0 ? BY - h : BY); bars[i].setAttribute("height", h.toFixed(1)); bars[i].setAttribute("fill", v >= 0 ? css("--lamina") : css("--retina")); });
+      distLabel.textContent = `distância ao centro treinado ${fmt(A.dist_to_released_centroid[k], 3)} · entrada total ${fmt(A.l1_mass[k], 2)} A·s (treinados: 38)`;
+    }
+    if (reduced) { paint(it.length * 0.18); return; }
+    paint(0);
+    loop(svg, paint);
+  })();
+
+  // ---- navegação entre pranchas ---------------------------------------------------------------------
+  (function explorer() {
+    const plates = [...document.querySelectorAll(".plate")];
+    const nav = document.querySelector("nav.plates");
+    const prev = document.getElementById("prev"), next = document.getElementById("next"), counter = document.getElementById("counter");
+    const stage = document.getElementById("stage");
+    let current = 0;
+    const buttons = plates.map((p, i) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.innerHTML = (i === 0 ? "" : `<b>${i}</b>`) + `<span>${p.dataset.short}</span>`;
+      b.setAttribute("aria-label", (i === 0 ? "" : `Prancha ${i} · `) + p.dataset.title);
+      b.addEventListener("click", () => show(i));
+      nav.appendChild(b);
+      return b;
+    });
+    function replay(plate) {                    // volta a correr as animações de entrada (as que não são infinitas)
+      plate.querySelectorAll(".anim, .bar span").forEach(e => {
+        if (getComputedStyle(e).animationIterationCount === "infinite") return;
+        const a = e.style.animation;
+        e.style.animation = "none";
+        void e.offsetWidth;
+        e.style.animation = a;
+      });
+    }
+    function show(i) {
+      current = (i + plates.length) % plates.length;
+      plates.forEach((p, k) => p.classList.toggle("active", k === current));
+      buttons.forEach((b, k) => b.setAttribute("aria-current", k === current ? "true" : "false"));
+      prev.disabled = current === 0;
+      next.disabled = current === plates.length - 1;
+      counter.textContent = current === 0 ? `Introdução · ${plates.length - 1} pranchas` : `Prancha ${current} de ${plates.length - 1} · ${plates[current].dataset.title}`;
+      stage.scrollTop = 0;
+      if (!reduced) replay(plates[current]);
+    }
+    prev.addEventListener("click", () => show(current - 1));
+    next.addEventListener("click", () => show(current + 1));
+    document.addEventListener("keydown", e => {
+      if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
+      if (e.key === "ArrowRight" && current < plates.length - 1) show(current + 1);
+      if (e.key === "ArrowLeft" && current > 0) show(current - 1);
+    });
+    show(0);
+  })();
+})();
+</script>
+</body>
+</html>

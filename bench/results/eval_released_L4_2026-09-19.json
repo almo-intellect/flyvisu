@@ -1,0 +1,19 @@
+{
+  "what": "Released, fully trained flyvis models (flow/0000/<id>, 250k steps, downloaded by `flyvis download-pretrained`) scored with flyvis 1.2.0's own validation loss on the 1.2.0 default task/validation set (16 sequences, batch 1, 19 frames, dt 0.02, t_pre 0.25 s, network and decoder in eval mode, augmentation off). Same loss definition as curve_L4_2026-09-19.json. Each released dir holds one checkpoint. 'stored' is the validation/loss scalar shipped with the model (the number Stage 0 §5 averaged to 5.3143).",
+  "loss_definition": "mean over validation set of sqrt(sum over 19 frames x 2 channels x 721 columns of squared flow error)",
+  "models": {
+    "000": {"val_1.2.0": 1103.454, "stored": 5.136557, "ratio": 214.8},
+    "001": {"val_1.2.0": 1114.762, "stored": 5.191043, "ratio": 214.7},
+    "002": {"val_1.2.0": 1120.818, "stored": 5.220127, "ratio": 214.7},
+    "003": {"val_1.2.0": 1132.846, "stored": 5.247156, "ratio": 215.9},
+    "004": {"val_1.2.0": 1146.708, "stored": 5.251273, "ratio": 218.4}
+  },
+  "summary": {
+    "trained_mean": 1123.7, "trained_sd": 16.8,
+    "init_loss_all_arms": 1212.557,
+    "learnable_range": 88.9, "learnable_range_pct": 7.3,
+    "our_arms_after_10.5k_steps": 1207.0,
+    "fraction_of_descent_after_10.5k": 0.06,
+    "note": "stored/1.2.0 ratio is ~215 and preserves the ranking, so the stored number is the same loss on a different normalization (not identified; not sqrt(19*2*721)=165.5)."
+  }
+}

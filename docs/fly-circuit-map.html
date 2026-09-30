@@ -1,0 +1,490 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Fly Circuit Identifiability</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@87,500;87,650&family=JetBrains+Mono:wght@400;500&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
+<style>
+  :root {
+    --ground: #f1f4f6;
+    --surface: #ffffff;
+    --ink: #15202b;
+    --muted: #56636f;
+    --rule: #d3dae0;
+    --accent: #9a610f;
+    --accent-soft: #f6e6c8;
+    --chip-flyvis: #e9edf0;
+    --chip-flyvis-edge: #7b8792;
+    --chip-shared: #dcefea;
+    --chip-shared-edge: #2f7a68;
+    --chip-treat: #fbe8c8;
+    --chip-treat-edge: #b7791f;
+    --chip-tool: #e4e4f5;
+    --chip-tool-edge: #5b5ea6;
+    --chip-block: #f6d9d5;
+    --chip-block-edge: #b4412f;
+    --chip-ink: #15202b;
+    --display: "Archivo", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
+    --body: "Source Serif 4", Georgia, "Times New Roman", serif;
+    --mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #0e1318;
+      --surface: #151c23;
+      --ink: #e4e9ee;
+      --muted: #93a0ab;
+      --rule: #28323b;
+      --accent: #e2a64b;
+      --accent-soft: #3a2b12;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #0e1318;
+    --surface: #151c23;
+    --ink: #e4e9ee;
+    --muted: #93a0ab;
+    --rule: #28323b;
+    --accent: #e2a64b;
+    --accent-soft: #3a2b12;
+  }
+
+  body {
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--body);
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    padding-inline: 20px;
+    padding-block: 40px 64px;
+  }
+  .page { max-width: 1180px; margin: 0 auto; display: grid; gap: 56px; }
+  .prose { max-width: 66ch; }
+
+  header { display: grid; gap: 14px; }
+  .mark { display: flex; align-items: center; gap: 10px; color: var(--muted);
+    font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.06em; text-transform: uppercase; }
+  .mark svg { width: 34px; height: 30px; flex: none; }
+  h1, h2 { font-family: var(--display); font-stretch: 87%; text-wrap: balance; margin: 0; }
+  h1 { font-size: clamp(2rem, 4.6vw, 3.1rem); font-weight: 650; line-height: 1.05; letter-spacing: -0.01em; }
+  h2 { font-size: 1.6rem; font-weight: 650; line-height: 1.15; }
+  p { margin: 0; }
+  .lede { font-size: 1.2rem; color: var(--muted); max-width: 60ch; }
+  code, .id { font-family: var(--mono); font-size: 0.86em; }
+
+  section { display: grid; gap: 20px; }
+  .section-head { display: grid; gap: 10px; }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; padding: 0; margin: 0; }
+  .legend li { display: inline-flex; align-items: center; gap: 8px; font-family: var(--mono);
+    font-size: 0.78rem; color: var(--ink); padding: 4px 10px 4px 6px; border: 1px solid var(--rule);
+    border-radius: 999px; background: var(--surface); }
+  .swatch { width: 14px; height: 14px; border-radius: 3px; border: 1.5px solid; flex: none; }
+  .sw-flyvis { background: var(--chip-flyvis); border-color: var(--chip-flyvis-edge); }
+  .sw-shared { background: var(--chip-shared); border-color: var(--chip-shared-edge); }
+  .sw-treat { background: var(--chip-treat); border-color: var(--chip-treat-edge); }
+  .sw-tool { background: var(--chip-tool); border-color: var(--chip-tool-edge); }
+  .sw-block { background: var(--chip-block); border-color: var(--chip-block-edge); }
+
+  figure { margin: 0; background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; }
+  .diagram { overflow-x: auto; padding: 24px 20px; }
+  pre.mermaid { margin: 0; background: transparent; color: var(--ink); font-family: var(--mono);
+    font-size: 0.8rem; white-space: pre; text-align: center; }
+  figcaption { border-top: 1px solid var(--rule); padding: 12px 20px; font-size: 0.9rem; color: var(--muted); }
+
+  .notes { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px 32px; margin: 0; }
+  .notes div { display: grid; gap: 4px; align-content: start; }
+  .notes dt { font-family: var(--display); font-stretch: 87%; font-weight: 650; font-size: 0.8rem;
+    letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+  .notes dd { margin: 0; font-size: 0.97rem; }
+
+  .status { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+  .table-wrap { overflow-x: auto; }
+  .status th, .status td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  .status th { font-family: var(--display); font-stretch: 87%; font-weight: 650; font-size: 0.78rem;
+    letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+  .status td.num { font-family: var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; font-size: 0.88rem; }
+  .pill { display: inline-block; font-family: var(--mono); font-size: 0.72rem; padding: 2px 8px; border-radius: 999px;
+    border: 1.5px solid; color: var(--chip-ink); white-space: nowrap; }
+  .pill.ok { background: var(--chip-shared); border-color: var(--chip-shared-edge); }
+  .pill.stop { background: var(--chip-block); border-color: var(--chip-block-edge); }
+
+  .eq { display: grid; gap: 14px; padding: 20px; font-family: var(--mono); font-size: 0.86rem; line-height: 1.5; }
+  .eq .row { display: grid; grid-template-columns: minmax(150px, 190px) 1fr; gap: 12px 18px; align-items: baseline; }
+  .eq .lbl { font-family: var(--display); font-stretch: 87%; font-weight: 650; font-size: 0.78rem;
+    letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+  .eq .arms { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+  .eq .arm { border: 1.5px solid var(--chip-treat-edge); background: var(--chip-treat); color: var(--chip-ink);
+    border-radius: 6px; padding: 10px 12px; }
+  .eq .arm b { display: block; font-family: var(--display); font-stretch: 87%; margin-bottom: 4px; }
+  .eq .shared { border-color: var(--chip-shared-edge); background: var(--chip-shared); }
+  @media (max-width: 480px) { .eq .row { grid-template-columns: 1fr; } }
+
+  footer { font-size: 0.85rem; color: var(--muted); border-top: 1px solid var(--rule); padding-top: 16px; }
+
+  @media (max-width: 480px) {
+    body { font-size: 1rem; padding-block: 28px 48px; }
+    .diagram { padding: 16px 12px; }
+    .page { gap: 44px; }
+  }
+</style>
+
+<div class="page">
+  <header>
+    <div class="mark" aria-hidden="true">
+      <svg viewBox="-18 -16 36 32">
+        <defs>
+          <polygon id="hx" points="0,-5.6 4.85,-2.8 4.85,2.8 0,5.6 -4.85,2.8 -4.85,-2.8"></polygon>
+        </defs>
+        <use href="#hx" x="0" y="0" fill="currentColor" stroke="currentColor" stroke-width="0.9"></use>
+        <use href="#hx" x="10.39" y="0" fill="none" stroke="currentColor" stroke-width="0.9"></use>
+        <use href="#hx" x="5.2" y="9" fill="none" stroke="currentColor" stroke-width="0.9"></use>
+        <use href="#hx" x="-5.2" y="9" fill="none" stroke="currentColor" stroke-width="0.9"></use>
+        <use href="#hx" x="-10.39" y="0" fill="none" stroke="currentColor" stroke-width="0.9"></use>
+        <use href="#hx" x="-5.2" y="-9" fill="none" stroke="currentColor" stroke-width="0.9"></use>
+        <use href="#hx" x="5.2" y="-9" fill="none" stroke="currentColor" stroke-width="0.9"></use>
+      </svg>
+      <span>fruitfly · project map · 17 Sep 2026</span>
+    </div>
+    <h1>Fly Circuit Identifiability</h1>
+    <p class="lede">How each training run is assembled inside flyvis, and the chain of evidence the study is built to deliver.</p>
+  </header>
+
+  <section aria-labelledby="model">
+    <div class="section-head prose">
+      <h2 id="model">The model, as it trains today</h2>
+      <p>A movie is rendered onto the fly's hexagonal eye, drives the photoreceptors, propagates through the full connectome of the optic lobe as a recurrent network of leaky neurons, and 34 of the 65 cell types are read out to predict optic flow. Both arms are this same network; they differ only in the two boxes below the equations.</p>
+    </div>
+    <figure>
+      <div class="diagram">
+<pre class="mermaid">
+flowchart TB
+  MOV["Sintel frame sequence&lt;br/&gt;with optic-flow ground truth"]
+  HEX["Hexagonal rendering&lt;br/&gt;721 columns (extent 15) · 19 frames · 20 ms steps"]
+  PR["Photoreceptors R1 – R8&lt;br/&gt;8 types × 721 columns · driven by luminance"]
+  NET["Recurrent connectome network&lt;br/&gt;65 cell types · 45,669 neurons · 1,513,231 synapses&lt;br/&gt;one leaky voltage per neuron, ReLU output"]
+  OUT["34 readout types&lt;br/&gt;T1–T5d, Tm and TmY cells · 721 columns each"]
+  DEC["DecoderGAVP&lt;br/&gt;hex conv 34 → 8 · batch norm · softplus · dropout 0.5&lt;br/&gt;hex conv 8 → 2"]
+  FLOW["Predicted optic flow&lt;br/&gt;2 channels per column"]
+  LOSS["L2 loss against Sintel flow"]
+
+  MOV --&gt; HEX --&gt; PR --&gt; NET --&gt; OUT --&gt; DEC --&gt; FLOW --&gt; LOSS
+  NET -- "recurrent · every 20 ms step" --&gt; NET
+
+  classDef flyvis fill:#e9edf0,stroke:#7b8792,color:#15202b
+  classDef shared fill:#dcefea,stroke:#2f7a68,color:#10261f
+  class MOV,HEX,PR,OUT,DEC,FLOW,LOSS flyvis
+  class NET shared
+</pre>
+      </div>
+      <figcaption>Every box except the network is stock flyvis. The network's parameterization and integrator are this project's (green); the two arms differ inside it.</figcaption>
+    </figure>
+    <figure>
+      <div class="eq">
+        <div class="row"><span class="lbl">Drive on neuron i of type t</span><span>u<sub>i</sub> = b<sub>t</sub> + Σ<sub>j</sub> w<sub>ij</sub> · relu(v<sub>j</sub>) + x<sub>i</sub></span></div>
+        <div class="row"><span class="lbl">Voltage update, exact</span><span>v<sub>i</sub> ← e<sup>−dt/τ</sup> v<sub>i</sub> + (1 − e<sup>−dt/τ</sup>) u<sub>i</sub></span></div>
+        <div class="row"><span class="lbl">Synaptic weight</span><span>w<sub>ij</sub> = s(t<sub>j</sub>→t<sub>i</sub>) · N<sub>ij</sub> · softplus(ρ(t<sub>j</sub>→t<sub>i</sub>))</span></div>
+        <div class="row"><span class="lbl">Where</span><span>x<sub>i</sub> luminance input (photoreceptors only) · N<sub>ij</sub> synapse count from the connectome, fixed · ρ one trainable magnitude per (source type, target type) pair, 604 of them · b<sub>t</sub>, τ<sub>t</sub> one per cell type, 65 each</span></div>
+        <div class="arms">
+          <div class="arm shared"><b>Arm A — baseline</b>τ = τ<sub>t</sub>, a fixed learned constant per type. s = the connectome's sign per type pair. Plus three inert 65-vectors so the count matches.</div>
+          <div class="arm"><b>Arm B — constrained</b>τ = τ<sub>t</sub> · exp(tanh(g<sub>v,t</sub> v<sub>i</sub> + g<sub>u,t</sub> u<sub>i</sub> + g<sub>b,t</sub>)), gated by the neuron's own state. s = one sign per source type (Dale's law); flips 10 of 604 pairs.</div>
+        </div>
+      </div>
+    </figure>
+    <div class="table-wrap">
+      <table class="status">
+        <thead>
+          <tr><th scope="col">Parameters</th><th scope="col">Arm A</th><th scope="col">Arm B</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Resting potential b<sub>t</sub> · time constant τ<sub>t</sub></td><td class="num">65 + 65</td><td class="num">65 + 65</td></tr>
+          <tr><td>Synaptic magnitudes ρ, one per type pair</td><td class="num">604</td><td class="num">604</td></tr>
+          <tr><td>Per-type extras</td><td class="num">195 inert filler</td><td class="num">195 CfC gates</td></tr>
+          <tr><td><strong>Trainable</strong></td><td class="num"><strong>929</strong></td><td class="num"><strong>929</strong></td></tr>
+          <tr><td>Fixed: signs (604) + synapse counts (2,355)</td><td class="num">2,959</td><td class="num">2,959</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section aria-labelledby="arch">
+    <div class="section-head prose">
+      <h2 id="arch">How a run is built</h2>
+      <p>Everything biological comes from flyvis unchanged. <span class="id">flyvis_seam.py</span> only decides which classes flyvis instantiates, so both arms share one substrate and differ in exactly two places: the synapse signs and the time-constant dynamics.</p>
+    </div>
+    <ul class="legend">
+      <li><span class="swatch sw-flyvis"></span>flyvis, unchanged</li>
+      <li><span class="swatch sw-shared"></span>shared substrate, identical in both arms</li>
+      <li><span class="swatch sw-treat"></span>treatment, differs between arms</li>
+      <li><span class="swatch sw-tool"></span>project tooling</li>
+    </ul>
+    <figure>
+      <div class="diagram">
+<pre class="mermaid">
+flowchart LR
+  subgraph IN["Inputs"]
+    direction TB
+    CON["fib25 / fib19 connectome&lt;br/&gt;45,669 neurons · 1,513,231 edges&lt;br/&gt;65 cell types"]
+    SIN["MPI-Sintel movies&lt;br/&gt;rendered onto 721 hexagonal columns"]
+  end
+
+  CFG["flyvis_arm_config&lt;br/&gt;dale · liquid_tau → class names"]
+
+  subgraph NET["flyvis Network"]
+    direction TB
+    subgraph NODE["Per cell type · 65 values each"]
+      BIAS["resting potential"]
+      TAU["time constant τ&lt;br/&gt;projected clamp 2 ms – 1,000 s"]
+      GATE["CfC gates v · u · b&lt;br/&gt;arm B only"]
+      FILL["3 inert filler vectors&lt;br/&gt;arm A only · never read"]
+    end
+    subgraph EDGE["Per source → target type pair · 604 values each"]
+      SIGN["sign ±1&lt;br/&gt;A: connectome · B: Dale's law"]
+      COUNT["synapse count · fixed"]
+      STR["strength = softplus(raw)&lt;br/&gt;no clamp at zero"]
+    end
+    DYN["Exact exponential update&lt;br/&gt;v ← e^(−dt/τ) v + (1 − e^(−dt/τ)) u&lt;br/&gt;B: τ · exp(tanh(gates))"]
+  end
+
+  VER["verify_seam&lt;br/&gt;22 tensor checks · pass on T4"]
+  DEC["DecoderGAVP&lt;br/&gt;hex conv → optic flow"]
+  LOSS["L2 optic-flow loss"]
+  SOLV["MultiTaskSolver&lt;br/&gt;Adam · activity penalty"]
+  CK["best checkpoint&lt;br/&gt;one per seed"]
+
+  CFG -. "selects classes" .-&gt; NET
+  VER -. "must pass first" .-&gt; NET
+  CON --&gt; NODE
+  CON --&gt; EDGE
+  NODE --&gt; DYN
+  EDGE -- "weight = sign × count × strength" --&gt; DYN
+  SIN -- "photoreceptor input" --&gt; DYN
+  DYN -- "activity · 19 frames × 45,669" --&gt; DEC
+  DEC --&gt; LOSS --&gt; SOLV
+  SOLV -. "gradient step · 929 parameters" .-&gt; NET
+  SOLV --&gt; CK
+
+  classDef flyvis fill:#e9edf0,stroke:#7b8792,color:#15202b
+  classDef shared fill:#dcefea,stroke:#2f7a68,color:#10261f
+  classDef treat fill:#fbe8c8,stroke:#b7791f,color:#2a1d05
+  classDef tool fill:#e4e4f5,stroke:#5b5ea6,color:#1a1b3a
+  class CON,SIN,BIAS,COUNT,DEC,LOSS,SOLV,CK flyvis
+  class TAU,STR,DYN shared
+  class SIGN,GATE,FILL treat
+  class CFG,VER tool
+</pre>
+      </div>
+      <figcaption>Arm A: connectome signs, fixed τ, inert filler. Arm B: Dale signs, input-dependent τ via per-type gates. Both train exactly 929 parameters.</figcaption>
+    </figure>
+    <dl class="notes">
+      <div>
+        <dt>What the seam changes</dt>
+        <dd>Softplus magnitudes, the exact integrator and the τ clamp in both arms; Dale signs and CfC gates in arm B. Dale flips 10 of 604 sign groups (8,590 edges).</dd>
+      </div>
+      <div>
+        <dt>What stays flyvis</dt>
+        <dd>Connectome, stimulus rendering, decoder, loss, optimizer, schedule and checkpoints are flyvis 1.2.0 code paths, so any difference between arms is ours.</dd>
+      </div>
+      <div>
+        <dt>How it is proven</dt>
+        <dd><span class="id">verify_seam</span> checks the built tensors, not the config labels. Eight deliberately reinserted bugs were each caught.</dd>
+      </div>
+    </dl>
+  </section>
+
+  <section aria-labelledby="aim">
+    <div class="section-head prose">
+      <h2 id="aim">What the study is trying to show</h2>
+      <p>Retrained flyvis models reach the same task error but not the same mechanism. The bet is that biological constraints narrow the space of solutions enough that different seeds converge on one circuit mechanism — without paying for it in task error.</p>
+    </div>
+    <ul class="legend">
+      <li><span class="swatch sw-shared"></span>established</li>
+      <li><span class="swatch sw-treat"></span>planned</li>
+      <li><span class="swatch sw-block"></span>blocked now</li>
+      <li><span class="swatch sw-flyvis"></span>possible outcome</li>
+    </ul>
+    <figure>
+      <div class="diagram">
+<pre class="mermaid">
+flowchart TD
+  Q["Question&lt;br/&gt;Retrain a connectome-constrained fly visual model with a new seed:&lt;br/&gt;does it learn the same circuit mechanism?"]
+  PRE["Premise · measured in Stage 0&lt;br/&gt;50 released models agree on task loss, CV 1.4%&lt;br/&gt;their T4c input mechanism scatters 41× more, CV 0.59"]
+  HYP["Hypothesis&lt;br/&gt;Dale's law + cell-type tying + liquid τ&lt;br/&gt;pin the mechanism down"]
+  FEAS["Stage 0 feasibility · passed&lt;br/&gt;both arms build and train on the real connectome"]
+  COST["Stage 0 cost gate · blocked&lt;br/&gt;1 run ≈ 22.7 h ≈ 29 CU&lt;br/&gt;design needs ≈ 102 runs, budget buys ≈ 8"]
+  S1["Stage 1 gate&lt;br/&gt;arm B median validation loss&lt;br/&gt;within 10% of arm A"]
+
+  subgraph S2["Stage 2 · two arms, same substrate, 929 parameters each"]
+    direction LR
+    A["Arm A · baseline&lt;br/&gt;connectome signs · fixed τ"]
+    B["Arm B · constrained&lt;br/&gt;Dale signs · CfC τ"]
+  end
+
+  SEEDS["≥ 36 seeds per arm&lt;br/&gt;+ 15 identical-seed runs per arm&lt;br/&gt;to measure the nondeterminism floor"]
+  M2["M2 fingerprint per model&lt;br/&gt;input currents into T4c for moving edges&lt;br/&gt;pipeline verified on the released models"]
+  VL["validation loss per model"]
+  H1{"H1 · PERMDISP p &lt; 0.05&lt;br/&gt;and arm B less dispersed?"}
+  H2{"H2 · TOST at ± 0.08&lt;br/&gt;losses equivalent?"}
+  WIN["Claim supported&lt;br/&gt;constraints make mechanisms identifiable&lt;br/&gt;at no task cost"]
+  PART["Lower dispersion,&lt;br/&gt;task equivalence not established&lt;br/&gt;margin stays 0.08"]
+  NEG["Structure is not enough&lt;br/&gt;a publishable negative result"]
+
+  Q --&gt; PRE --&gt; HYP --&gt; FEAS --&gt; COST --&gt; S1 --&gt; S2
+  S2 --&gt; SEEDS
+  SEEDS --&gt; M2 --&gt; H1
+  SEEDS --&gt; VL --&gt; H2
+  H1 -- "fail" --&gt; NEG
+  H1 -- "pass" --&gt; H2
+  H2 -- "pass" --&gt; WIN
+  H2 -- "fail" --&gt; PART
+
+  classDef done fill:#dcefea,stroke:#2f7a68,color:#10261f
+  classDef plan fill:#fbe8c8,stroke:#b7791f,color:#2a1d05
+  classDef block fill:#f6d9d5,stroke:#b4412f,color:#3a0f08,stroke-width:2px
+  classDef outcome fill:#e9edf0,stroke:#7b8792,color:#15202b
+  class Q,PRE,FEAS done
+  class HYP,S1,A,B,SEEDS,M2,VL,H1,H2 plan
+  class COST block
+  class WIN,PART,NEG outcome
+</pre>
+      </div>
+      <figcaption>H1 decides alone on the PERMDISP p-value; H2 must also pass for the headline claim. Outcomes follow PREREGISTRATION.md §1 and §3.1.</figcaption>
+    </figure>
+
+    <div class="table-wrap">
+      <table class="status">
+        <thead>
+          <tr><th scope="col">Stage 0 question</th><th scope="col">Result</th><th scope="col">Measured</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Does the premise reproduce?</td><td><span class="pill ok">yes</span></td><td class="num">loss CV 1.42% · 50 models</td></tr>
+          <tr><td>Is the mechanism really unstable across seeds?</td><td><span class="pill ok">yes · 41× the loss</span></td><td class="num">M2 CV 0.59 (CI 0.50–0.67) · 50 models · GO ≥ 5×</td></tr>
+          <tr><td>Do our arms run inside flyvis?</td><td><span class="pill ok">yes</span></td><td class="num">22 / 22 checks · CUDA</td></tr>
+          <tr><td>What does one full run cost?</td><td><span class="pill stop">over budget</span></td><td class="num">0.32 s/step · 22.7 h · ≈ 29 CU</td></tr>
+          <tr><td>How many runs can we afford?</td><td><span class="pill stop">≈ 16 of ≈ 90</span></td><td class="num">242 usable CU · ≈ 15 CU/run on the L4, 4 seeds at once</td></tr>
+          <tr><td>How many seeds does the test need?</td><td><span class="pill stop">30 per arm at 2×</span></td><td class="num">PERMDISP power on the real cloud · 8 per arm detects only ≥ 4×</td></tr>
+          <tr><td>Does the mechanism form before the loss descends?</td><td><span class="pill stop">no · neither moves by 60k</span></td><td class="num">loss 1207 ± 1 from 3k to 60k · fingerprint 0.03 from init, 0.39 from trained models</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="prose">The mechanism result, measured 19 Sep 2026 on the paper's own 50 models with the pre-registered fingerprint: the same T4c cell is fed by different inputs in different seeds. Mi1 excitation is the one constant (about a fifth of the input mass in nearly every model); 19 of 50 models have no Mi9 input, 11 none from Mi4, 17 none from Tm3, and two are driven mainly by lateral T4a or by Tm3. Even the overall current scale spans 7–120 A·s. Kill criterion 1 is settled; kill criterion 4 in PLAN.md still applies: do not start Stage 2 underpowered. Simulating the primary test on this real cloud of fingerprints says 30 seeds per arm are needed to detect a halving of the mechanism variance with 80 % power (24 with the pre-registration's synthetic generator, 12 with a Gaussian fit); the budget buys 8 per arm, which only detects a four-fold reduction. A 60,000-step run of both arms (20 Sep 2026, 7.7 CU, checkpoints on Drive) then closed the last shortcut: the validation loss sits at 1207 ± 1 from step 3,000 to 60,000, and the T4c input fingerprint, measured at all 62 checkpoints, moves 0.03 from its starting point — a fifth of the trained models' own spread, and not toward them. At initialization T4c is dominated by TmY15 inhibition; the trained models are dominated by Mi1 excitation. Nothing of that reorganization has begun by a quarter of the schedule, so a run cannot be stopped early and still have a mechanism to compare. What remains to be shown is that the current training recipe reproduces the trained models at all: one stock run to 250,000 steps (≈ 24 CU) would settle it, and say where in the schedule the mechanism forms.</p>
+  </section>
+
+  <section aria-labelledby="levers">
+    <div class="section-head prose">
+      <h2 id="levers">What actually makes a run cheaper</h2>
+      <p>Measured on Colab, 19 Sep 2026, arm B at extent 15, batch 4, 19 frames, on mock Sintel. One iteration on the T4 splits as: backward 34%, optimizer step and activity penalty 30%, network forward 19%, data loading 15%, decoder and loss 3%. The GPU is busy 82% of the time and launches 12,455 kernels per step, nearly all of them small gathers, scatters and elementwise passes over the 1.5-million-edge tensors.</p>
+    </div>
+    <div class="table-wrap">
+      <table class="status">
+        <thead>
+          <tr><th scope="col">Lever</th><th scope="col">Measured effect</th><th scope="col">Verdict</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>L4 instead of T4</td><td class="num">1.7× faster · 1.54 vs 1.27 CU/h · 12 vs 2 vCPU</td><td><span class="pill ok">worth it</span></td></tr>
+          <tr><td>Several seeds at once on one GPU</td><td class="num">L4 ×4: 1.5× throughput · T4 ×4: 1.1× · A100 ×8: 3.5×</td><td><span class="pill ok">worth it on L4, A100</span></td></tr>
+          <tr><td>A100 80 GB instead of L4</td><td class="num">1.6× faster · 6.77 vs 1.54 CU/h · 24 CU/run at best</td><td><span class="pill stop">not worth it</span></td></tr>
+          <tr><td>torch.compile on the 19-frame rollout</td><td class="num">rollout 0.063 → 0.059 s · ≈1.5% of a step</td><td><span class="pill stop">not worth it</span></td></tr>
+          <tr><td>Shorter training than 250,000 steps</td><td class="num">10.5k steps: 1212.6 → ≈1207, ours and stock alike; trained models sit at ≈1124</td><td><span class="pill stop">not available</span></td></tr>
+          <tr><td>Higher learning rate (5–20×)</td><td class="num">same plateau, noise SD 0.4 → 5.2</td><td><span class="pill stop">not the lever</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <dl class="notes">
+      <div>
+        <dt>Best measured setup</dt>
+        <dd>L4 with 4 concurrent seeds: ≈ 15 CU per full run, against 28 CU on a single T4 and 24 CU on an A100 running 8 seeds. The budget then buys ≈ 16 runs instead of 8. The A100's network forward pass is no faster than the L4's — only its backward is — so its 4.4× hourly price never pays back.</dd>
+      </div>
+      <div>
+        <dt>What would close the gap</dt>
+        <dd>102 runs fit in 242 CU only if training also shortens to roughly 40,000 steps. The learning curve says that is not available: both arms move from 1212.6 to ≈ 1207 in 10,000 steps, and fully trained flyvis models score ≈ 1124 under the same loss, so the whole learnable range is ≈ 7 % and 10k steps cover 6 % of it. Unmodified flyvis on the same horizon follows the same curve, and a learning rate 5–20× higher changes nothing but the noise. Shortening needs a different kind of change — or a different endpoint than the loss.</dd>
+      </div>
+      <div>
+        <dt>Still open</dt>
+        <dd>A run is 8–15 h even then, and Colab Pro has no background execution, so the resume path has to work. flyvis 1.2.0's own is broken.</dd>
+      </div>
+    </dl>
+  </section>
+
+  <footer>
+    Sources: PREREGISTRATION.md §1, §3.1 · PLAN.md §5, §7 · stage0_results.json (T4 run, 17 Sep 2026) · bench_gpu.py and bench_phases.py (T4 and L4, 19 Sep 2026) · src/flyvis_seam.py
+  </footer>
+</div>
+
+<!--claude-mermaid-runtime-begin:3477-->
+<style>.mermaid-diagram{margin-block:4px}.mermaid-diagram svg{display:block;margin:0 auto;max-width:100%;height:auto}</style>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>(function(){
+var CFG={"palettes":{"light":{"surface":"#f4efe4","text":"#42392e","line":"#8a7f6d","border":"#7a6c52","bg":"#fffdf8"},"dark":{"surface":"#262b34","text":"#f2f3f5","line":"#a8adb8","border":"#9aa4b8","bg":"#1f232b"}}};
+if(typeof mermaid==='undefined')return;
+var pres=Array.prototype.slice.call(document.querySelectorAll('pre.mermaid')).filter(function(p){if(p.hasAttribute('data-claude-mermaid-claimed'))return false;p.setAttribute('data-claude-mermaid-claimed','1');return true;});
+if(!pres.length)return;
+var mq=window.matchMedia?window.matchMedia('(prefers-color-scheme: dark)'):null;
+var root=document.documentElement;
+var items=pres.map(function(pre){
+var mount=document.createElement('div');mount.className='mermaid-diagram';
+return {pre:pre,mount:mount,src:pre.textContent||''};
+});
+var seq=0;
+var renderGen=0;
+var lastKey='';
+function pageBg(fallback){
+var els=[document.body,document.documentElement];
+for(var i=0;i<els.length;i++){
+var c=els[i]&&getComputedStyle(els[i]).backgroundColor;
+if(c&&c!=='transparent'&&c!=='rgba(0, 0, 0, 0)')return c;
+}
+return fallback;
+}
+function render(){
+var theme=root.getAttribute('data-theme');
+var dark=theme==='dark'||(!!(mq&&mq.matches)&&theme!=='light');
+var pal=dark?CFG.palettes.dark:CFG.palettes.light;
+var bg=pageBg(pal.bg);
+var key=(dark?'d':'l')+'|'+bg;
+if(key===lastKey)return;
+lastKey=key;
+var gen=++renderGen;
+var font=getComputedStyle(document.body).fontFamily||'sans-serif';
+var nat={useMaxWidth:false};
+mermaid.initialize({
+startOnLoad:false,securityLevel:'strict',theme:'base',
+flowchart:nat,sequence:nat,er:nat,state:nat,class:nat,pie:nat,
+gantt:nat,journey:nat,timeline:nat,gitGraph:nat,mindmap:nat,xyChart:nat,
+quadrantChart:nat,sankey:nat,c4:nat,requirement:nat,block:nat,
+packet:nat,kanban:nat,architecture:nat,radar:nat,
+themeVariables:{background:bg,mainBkg:pal.surface,primaryColor:pal.surface,
+primaryTextColor:pal.text,lineColor:pal.line,primaryBorderColor:pal.border,
+nodeBorder:pal.border,clusterBorder:pal.border,edgeLabelBackground:bg,
+clusterBkg:'rgba(127,127,127,0.07)',titleColor:pal.text,
+darkMode:dark,rowOdd:bg,rowEven:'rgba(127,127,127,0.07)',
+attributeBackgroundColorOdd:bg,attributeBackgroundColorEven:'rgba(127,127,127,0.07)',
+fontSize:'16px',fontFamily:font},
+themeCSS:'.node rect, .node circle, .node polygon, .node path, .cluster rect { stroke-width: 2px; }'
+});
+items.forEach(function(it){
+var id='claude-mermaid-'+seq++;
+mermaid.render(id,it.src).then(function(r){
+if(gen!==renderGen)return;
+var prev=it.pre.previousElementSibling;
+if(prev&&prev.className==='mermaid-diagram'&&prev!==it.mount)return;
+it.mount.innerHTML=r.svg;
+if(!it.mount.parentNode)it.pre.parentNode.insertBefore(it.mount,it.pre);
+it.pre.style.display='none';
+},function(){
+var scratch=document.getElementById(id);
+if(scratch)scratch.parentNode.removeChild(scratch);
+scratch=document.getElementById('d'+id);
+if(scratch)scratch.parentNode.removeChild(scratch);
+if(gen!==renderGen)return;
+if(it.mount.parentNode)it.mount.parentNode.removeChild(it.mount);
+it.pre.style.display='';
+});
+});
+}
+render();
+if(mq&&mq.addEventListener)mq.addEventListener('change',render);
+if(typeof MutationObserver!=='undefined')new MutationObserver(render).observe(root,{attributes:true,attributeFilter:['data-theme']});
+})();</script>
+<!--claude-mermaid-runtime-end-->
+
+</body></html>

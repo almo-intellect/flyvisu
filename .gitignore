@@ -1,0 +1,16 @@
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.venv*/
+venv*/
+
+# flyvis data root (connectome cache, Sintel, downloaded models): set FLYVIS_ROOT_DIR to it
+flyvis_data/
+out/
+
+# build outputs of the explainer scripts; the published copies live in docs/
+bench/results/explainer/fly-circuit-anatomy.html
+bench/results/explainer/visu/visu-anatomia.html
+bench/results/explainer/visu/visu-anatomia.artifact.html
+bench/results/explainer/visu/fonts/
+bench/results/explainer/sintel_clip/
